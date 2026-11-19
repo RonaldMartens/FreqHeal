@@ -1,0 +1,1495 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#090a10">
+<title>FreqHeal</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FreqHeal">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#090a10; --bg2:#10121b; --card:#141724; --card2:#1a1e2e; --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.16);
+  --ink:#f3f4f8; --muted:#9aa0b6; --dim:#6b7189; --accent:#8b7bff; --accent2:#4fd1c5; --warn:#ffb37a; --r:20px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;color:var(--ink);font:15px/1.55 Outfit,system-ui,-apple-system,"Segoe UI",sans-serif;
+  background:radial-gradient(1100px 600px at 0% -10%,rgba(139,123,255,.20),transparent 60%),
+             radial-gradient(900px 500px at 100% 0%,rgba(79,209,197,.13),transparent 60%),var(--bg);background-attachment:fixed}
+button{font:inherit;color:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:var(--ink);background:rgba(255,255,255,.05);border:1px solid var(--line2);border-radius:12px;padding:9px 12px;width:100%;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+select option{background:var(--bg2)}
+textarea{min-height:80px;resize:vertical}
+h1,h2,h3{margin:0;letter-spacing:-.01em}
+.hidden{display:none!important}
+.muted{color:var(--muted)} .small{font-size:13px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spread{justify-content:space-between}
+.glass{background:rgba(20,22,34,.55);backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);border:1px solid var(--line2)}
+
+/* Header */
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px;padding:max(14px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) 14px max(20px,env(safe-area-inset-left));
+  background:rgba(9,10,16,.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;letter-spacing:-.02em}
+.logo-orb{width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0,#c4b8ff 18%,#8b7bff 45%,#2b1f7a 100%);
+  box-shadow:0 0 18px rgba(139,123,255,.7);animation:breathe 6s ease-in-out infinite}
+.brand .word{background:linear-gradient(90deg,#fff,#c9c2ff 60%,#7fe7dc);-webkit-background-clip:text;background-clip:text;color:transparent}
+@keyframes breathe{50%{transform:scale(1.12);box-shadow:0 0 28px rgba(139,123,255,.9)}}
+nav{display:flex;gap:4px;margin-left:auto}
+nav button{display:flex;align-items:center;gap:7px;border:0;background:none;color:var(--muted);padding:8px 14px;border-radius:999px;font-weight:500}
+nav button span{font-size:15px;opacity:.85}
+nav button:hover{color:var(--ink)}
+nav button.active{background:rgba(139,123,255,.16);color:#fff}
+.icon-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line2);background:rgba(255,255,255,.04);display:grid;place-items:center;font-size:17px;flex:none}
+.icon-btn:hover{background:rgba(255,255,255,.1)}
+.icon-btn.lg{width:52px;height:52px;font-size:19px}
+
+main{max-width:1180px;margin:0 auto;padding:26px 20px 140px}
+section{display:none;animation:fadeUp .35s ease}
+section.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* Buttons */
+.btn{border:1px solid var(--line2);background:rgba(255,255,255,.05);padding:9px 16px;border-radius:999px;font-weight:500;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{background:rgba(255,255,255,.1)}
+.btn.primary{background:linear-gradient(135deg,#9d8cff,#6d5cf5);border-color:transparent;color:#fff;font-weight:600;box-shadow:0 8px 24px -8px rgba(125,105,255,.7)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{color:var(--warn)}
+.btn.sm{padding:6px 12px;font-size:13px}
+.link{background:none;border:0;padding:0;color:var(--muted);font-size:13px;text-decoration:underline;text-underline-offset:3px}
+.link:hover{color:var(--ink)}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-bottom:26px}
+@media (max-width:820px){.hero{grid-template-columns:1fr}}
+.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:600}
+.hero h1{font-size:clamp(34px,5vw,54px);line-height:1.05;font-weight:700;margin:8px 0 10px}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#b7abff,#6ee7da);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);margin:0 0 18px;max-width:460px}
+.stat-row{display:flex;gap:8px;flex-wrap:wrap}
+.stat{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid var(--line);font-size:14px}
+.stat b{font-weight:700}
+.hero-rec{position:relative;overflow:hidden;text-align:left;border:0;border-radius:26px;padding:24px;min-height:210px;color:#fff;
+  background:radial-gradient(circle at 85% 15%,rgba(255,255,255,.35),transparent 45%),linear-gradient(140deg,var(--g0),var(--g1));
+  display:flex;flex-direction:column;justify-content:flex-end;gap:4px;box-shadow:0 30px 60px -30px var(--g0);transition:transform .25s}
+.hero-rec:hover{transform:translateY(-3px)}
+.hero-rec .eyebrow{color:rgba(255,255,255,.8)}
+.hero-rec b{font-size:28px;line-height:1.1}
+.hero-rec .big-icon{position:absolute;right:18px;top:10px;font-size:84px;opacity:.9;filter:drop-shadow(0 10px 20px rgba(0,0,0,.3))}
+.hero-rec .go{position:absolute;right:20px;bottom:20px;width:56px;height:56px;border-radius:50%;background:#fff;color:#111;display:grid;place-items:center;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+
+/* Banner */
+.banner{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:16px;margin-bottom:20px;background:linear-gradient(90deg,rgba(139,123,255,.22),rgba(79,209,197,.12));border:1px solid var(--line2)}
+
+/* Moods */
+.moods{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 14px;margin:0 -2px 10px;scroll-snap-type:x mandatory;scrollbar-width:none}
+.moods::-webkit-scrollbar{display:none}
+.mood{flex:0 0 150px;scroll-snap-align:start;height:150px;border-radius:22px;border:2px solid transparent;padding:14px;text-align:left;position:relative;overflow:hidden;color:#fff;
+  background:radial-gradient(circle at 80% 10%,rgba(255,255,255,.3),transparent 50%),linear-gradient(150deg,var(--g0),var(--g1));display:flex;flex-direction:column;justify-content:flex-end;transition:transform .2s,border-color .2s}
+.mood:hover{transform:translateY(-3px)}
+.mood.on{border-color:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.12)}
+.mood .mi{position:absolute;top:12px;left:14px;font-size:34px}
+.mood b{font-size:17px}
+.mood small{opacity:.8;font-size:12px;line-height:1.3}
+.mood.all{background:linear-gradient(150deg,#2a2f45,#151826)}
+
+.toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:6px 0 16px}
+.toolbar h2{font-size:24px;margin-right:auto}
+.toolbar input{width:220px;border-radius:999px}
+.sub{font-size:15px;color:var(--muted);font-weight:600;margin:6px 0 12px;text-transform:uppercase;letter-spacing:.1em}
+
+/* Program cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.pcard{border-radius:var(--r);background:var(--card);border:1px solid var(--line);overflow:hidden;cursor:pointer;transition:transform .25s,border-color .25s,box-shadow .25s;display:flex;flex-direction:column}
+.pcard:hover{transform:translateY(-4px);border-color:var(--line2);box-shadow:0 24px 40px -24px var(--g0)}
+.pcard.playing{border-color:var(--g0);box-shadow:0 0 0 1px var(--g0),0 24px 40px -24px var(--g0)}
+.pcard-art{position:relative;height:112px;background:radial-gradient(circle at 85% 0%,rgba(255,255,255,.35),transparent 50%),linear-gradient(140deg,var(--g0),var(--g1))}
+.pcard-icon{position:absolute;left:14px;top:12px;font-size:30px}
+.spark{position:absolute;left:0;right:0;bottom:0;width:100%;height:46px;fill:rgba(255,255,255,.32)}
+.fav{position:absolute;right:10px;top:10px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(0,0,0,.25);color:#fff;font-size:16px;display:grid;place-items:center;backdrop-filter:blur(6px)}
+.fav.on{color:#ff7aa8}
+.eq{position:absolute;right:52px;top:18px;display:flex;gap:3px;align-items:flex-end;height:18px}
+.eq i{width:4px;background:#fff;border-radius:2px;animation:eq 1s ease-in-out infinite}
+.eq i:nth-child(2){animation-delay:.2s}.eq i:nth-child(3){animation-delay:.4s}
+@keyframes eq{0%,100%{height:5px}50%{height:18px}}
+.pcard-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.pcard-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.pcard h3{font-size:18px}
+.pcard p{margin:0;color:var(--muted);font-size:13.5px;line-height:1.45;flex:1}
+.freqs{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
+.freqs span{font-size:11.5px;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.06);color:#d5d8e6;font-variant-numeric:tabular-nums}
+.pcard-actions{display:flex;gap:14px;margin-top:6px}
+.empty{padding:40px;text-align:center;color:var(--muted);border:1px dashed var(--line2);border-radius:var(--r)}
+
+/* Panels */
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.page-head{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.page-head h1{font-size:34px;font-weight:700;margin-right:auto}
+.page-head p{width:100%;margin:4px 0 0;color:var(--muted)}
+
+/* Studio */
+.studio{display:grid;grid-template-columns:1.5fr 1fr;gap:18px}
+@media (max-width:900px){.studio{grid-template-columns:1fr}}
+.studio-main{position:relative;overflow:hidden;border-radius:26px;padding:24px;background:radial-gradient(600px 300px at 80% -10%,var(--bandc),transparent 70%),var(--card);border:1px solid var(--line);transition:background .6s}
+.seg{display:inline-flex;padding:4px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--line)}
+.seg button{border:0;background:none;padding:8px 16px;border-radius:999px;color:var(--muted);font-weight:500}
+.seg button.on{background:#fff;color:#111}
+.readout{display:flex;align-items:flex-end;gap:16px;margin:26px 0 8px;flex-wrap:wrap}
+.readout .big{font-size:clamp(64px,10vw,96px);font-weight:700;line-height:.9;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.readout .big small{font-size:24px;font-weight:500;color:var(--muted);margin-left:6px;letter-spacing:0}
+.band-pill{padding:6px 14px;border-radius:999px;font-weight:600;background:var(--bandc);color:#fff;margin-bottom:10px}
+.bandbar{display:flex;height:10px;border-radius:999px;overflow:hidden;margin:16px 0 4px;position:relative}
+.bandbar div{height:100%;opacity:.35;transition:opacity .3s}
+.bandbar div.on{opacity:1}
+.bandmarker{position:absolute;top:-5px;width:4px;height:20px;border-radius:2px;background:#fff;box-shadow:0 0 10px #fff;transition:left .15s}
+.bandlabels{display:flex;font-size:11px;color:var(--muted)}
+.ctrl{margin:20px 0}
+.ctrl .row{justify-content:space-between}
+.ctrl label{font-weight:600}
+.ctrl output{font-variant-numeric:tabular-nums;color:var(--muted)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;padding:0;border:0;border-radius:999px;background:rgba(255,255,255,.12);margin-top:10px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.4),0 0 0 4px rgba(139,123,255,.35);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#fff;border:0;box-shadow:0 0 0 4px rgba(139,123,255,.35)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line2);background:rgba(255,255,255,.05);padding:7px 13px;border-radius:999px;font-size:13.5px;white-space:nowrap}
+.chip:hover{background:rgba(255,255,255,.12)}
+.chip.on{background:#fff;color:#111;border-color:#fff}
+.ears{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;text-align:center;margin:16px 0}
+.ear{padding:14px 8px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
+.ear b{display:block;font-size:22px;font-variant-numeric:tabular-nums}
+.brain{grid-column:1/-1;padding:14px;border-radius:16px;background:linear-gradient(90deg,rgba(139,123,255,.25),rgba(79,209,197,.2));border:1px solid var(--line2)}
+.brain b{font-size:26px}
+
+/* People */
+.person{border-radius:var(--r);background:var(--card);border:1px solid var(--line);padding:18px;display:flex;flex-direction:column;gap:10px}
+.avatar{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:20px;color:#fff;flex:none;background:linear-gradient(140deg,var(--g0),var(--g1));box-shadow:0 8px 20px -8px var(--g0)}
+.person h3{font-size:18px}
+
+/* Journal */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+.kpi{border-radius:var(--r);padding:18px;background:var(--card);border:1px solid var(--line)}
+.kpi b{display:block;font-size:32px;font-weight:700;letter-spacing:-.02em}
+.kpi span{color:var(--muted);font-size:13px}
+.entry{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:start;padding:14px 16px;border-radius:16px;background:var(--card);border:1px solid var(--line);margin-bottom:10px}
+.entry .dot{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:20px;background:linear-gradient(140deg,var(--g0),var(--g1))}
+.entry h4{margin:0;font-size:16px}
+.entry .meta{color:var(--muted);font-size:13px}
+.entry .note{margin-top:6px;font-size:14px;white-space:pre-wrap}
+.stars-static{color:#ffd36e;letter-spacing:2px}
+.daygroup{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin:18px 0 8px}
+
+/* Learn */
+.learn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.bandrow{display:grid;grid-template-columns:90px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.bandrow:last-child{border:0}
+.bandrow b{display:block}
+.swatch{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.solf{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.solf div{padding:10px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+.solf b{display:block;font-size:18px}
+.notice{font-size:13px;color:var(--muted);border-left:3px solid var(--warn);padding:10px 14px;border-radius:8px;background:rgba(255,179,122,.06)}
+
+/* Mini player */
+.mini{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:30;width:min(640px,calc(100vw - 24px));border-radius:22px;padding:10px 12px 10px 10px;display:flex;align-items:center;gap:12px;
+  box-shadow:0 20px 50px -10px rgba(0,0,0,.6);cursor:pointer;animation:fadeUp .3s ease}
+.mini .art{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:22px;background:linear-gradient(140deg,var(--g0),var(--g1));flex:none;animation:breathe 6s ease-in-out infinite}
+.mini .txt{flex:1;min-width:0}
+.mini .txt b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini .txt span{font-size:13px;color:var(--muted)}
+.mini .prog{position:absolute;left:18px;right:18px;bottom:4px;height:3px;border-radius:2px;background:rgba(255,255,255,.1);overflow:hidden}
+.mini .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--g0),#fff);width:0}
+.round{width:44px;height:44px;border-radius:50%;border:0;background:#fff;color:#111;display:grid;place-items:center;flex:none}
+
+/* Stage */
+.stage{position:fixed;inset:0;z-index:50;background:#06070b;overflow:hidden;animation:stageIn .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes stageIn{from{transform:translateY(24px) scale(1.02)}to{transform:none}}
+#stCanvas{position:absolute;inset:0;width:100%;height:100%}
+.st-top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:12px;padding:max(16px,env(safe-area-inset-top)) 18px 0}
+.st-title{flex:1;text-align:center}
+.st-cat{font-size:12px;text-transform:uppercase;letter-spacing:.16em;color:rgba(255,255,255,.65);font-weight:600}
+.st-name{font-size:20px;font-weight:600}
+.st-for{font-size:13px;color:rgba(255,255,255,.65)}
+.st-center{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;width:90%}
+.st-hz{font-size:clamp(48px,9vw,80px);font-weight:700;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;text-shadow:0 4px 30px rgba(0,0,0,.4)}
+.st-hz small{font-size:.32em;font-weight:500;margin-left:4px;opacity:.75;letter-spacing:0}
+.st-mode{margin-top:8px;font-size:13px;color:rgba(255,255,255,.75)}
+.st-breath{min-height:26px;font-size:17px;font-weight:500;margin-bottom:6px;color:#fff;letter-spacing:.04em;transition:opacity .4s}
+.st-bottom{position:absolute;left:0;right:0;bottom:0;padding:0 18px max(20px,env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:14px}
+.st-setup{display:flex;gap:10px;padding:12px;border-radius:20px;width:min(560px,100%)}
+.st-setup label{flex:1;display:flex;flex-direction:column;gap:4px;font-size:12px;color:rgba(255,255,255,.7)}
+.st-setup select,.st-setup input{background:rgba(255,255,255,.08)}
+.st-info{display:flex;gap:16px;font-size:14px;color:rgba(255,255,255,.78);font-variant-numeric:tabular-nums;text-align:center;flex-wrap:wrap;justify-content:center}
+.st-controls{display:flex;align-items:center;gap:22px}
+.play-btn{width:84px;height:84px;border-radius:50%;border:0;background:#fff;color:#111;display:grid;place-items:center;box-shadow:0 0 0 8px rgba(255,255,255,.08),0 20px 50px -10px rgba(0,0,0,.6);transition:transform .15s}
+.play-btn:hover{transform:scale(1.05)}
+.play-btn:active{transform:scale(.96)}
+.st-chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.st-chips .chip{background:rgba(20,22,34,.5);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.sheet{position:absolute;left:50%;bottom:0;transform:translate(-50%,105%);width:min(560px,100%);max-height:70vh;overflow:auto;border-radius:26px 26px 0 0;padding:10px 20px max(24px,env(safe-area-inset-bottom));transition:transform .35s cubic-bezier(.2,.8,.2,1);z-index:3;background:rgba(16,18,28,.88)}
+.sheet.open{transform:translate(-50%,0)}
+.sheet-grip{width:44px;height:5px;border-radius:3px;background:rgba(255,255,255,.25);margin:4px auto 14px}
+.sheet h3{font-size:18px;margin-bottom:12px}
+.mixrow{display:grid;grid-template-columns:34px 1fr 46px;align-items:center;gap:10px;margin:10px 0}
+.mixrow .ic{font-size:22px;text-align:center}
+.mixrow label{font-size:14px;font-weight:500}
+.mixrow input{margin-top:6px}
+.mixrow output{font-size:12px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.opt{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.03);margin-bottom:8px}
+.opt.on{border-color:#fff;background:rgba(255,255,255,.1)}
+.opt small{color:var(--muted)}
+.steplist .opt.cur{border-color:var(--accent);background:rgba(139,123,255,.15)}
+.steplist .opt.done{opacity:.5}
+.done-card{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,calc(100% - 32px));border-radius:28px;padding:28px;text-align:center;z-index:4;background:rgba(16,18,28,.85);animation:fadeUp .4s ease}
+.done-card .emoji{font-size:48px}
+.done-card h2{font-size:28px;margin:6px 0}
+.stars{display:flex;justify-content:center;gap:6px;margin:16px 0}
+.stars button{border:0;background:none;font-size:32px;color:rgba(255,255,255,.2);transition:transform .15s,color .15s;padding:0}
+.stars button.on{color:#ffd36e}
+.stars button:hover{transform:scale(1.15)}
+.done-card textarea{margin-bottom:14px}
+
+/* Dialogs */
+dialog{border:1px solid var(--line2);border-radius:24px;background:var(--bg2);color:var(--ink);width:min(780px,calc(100vw - 24px));padding:24px;max-height:90vh}
+dialog::backdrop{background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
+dialog h2{font-size:24px;margin-bottom:16px}
+.f{display:block;margin-bottom:12px}
+.f>span{display:block;font-size:13px;color:var(--muted);margin-bottom:5px}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:6px 4px;vertical-align:middle}
+th{font-size:12px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+.steptbl input,.steptbl select{padding:7px 8px;border-radius:10px}
+.tiny{width:34px;height:34px;border-radius:10px;border:1px solid var(--line2);background:rgba(255,255,255,.04)}
+
+#toast{position:fixed;left:50%;top:80px;transform:translateX(-50%) translateY(-20px);opacity:0;z-index:100;padding:12px 20px;border-radius:999px;background:#fff;color:#111;font-weight:500;transition:.3s;pointer-events:none;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+#toast.show{opacity:1;transform:translateX(-50%)}
+
+/* Mobile */
+@media (max-width:760px){
+  .top{padding:max(12px,env(safe-area-inset-top)) 16px 12px}
+  nav{position:fixed;left:0;right:0;bottom:0;z-index:25;margin:0;justify-content:space-around;padding:6px 6px max(8px,env(safe-area-inset-bottom));background:rgba(9,10,16,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line)}
+  nav button{flex-direction:column;gap:2px;font-size:11px;padding:6px 8px;border-radius:12px}
+  nav button span{font-size:18px}
+  #settingsBtn{margin-left:auto}
+  main{padding:18px 16px 170px}
+  .mini{bottom:84px}
+  .toolbar input{width:100%}
+  .st-setup{flex-direction:column}
+  .play-btn{width:74px;height:74px}
+  .st-controls{gap:16px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="logo-orb"></span><span class="word">FreqHeal</span></div>
+  <nav id="nav">
+    <button data-tab="discover" class="active"><span>✦</span>Ontdek</button>
+    <button data-tab="studio"><span>◎</span>Studio</button>
+    <button data-tab="people"><span>♡</span>Mensen</button>
+    <button data-tab="journal"><span>☾</span>Logboek</button>
+    <button data-tab="learn"><span>❋</span>Kennis</button>
+  </nav>
+  <button class="icon-btn" id="settingsBtn" title="Instellingen">⚙</button>
+</header>
+
+<main>
+  <section id="discover" class="active"></section>
+  <section id="studio"></section>
+  <section id="people"></section>
+  <section id="journal"></section>
+  <section id="learn"></section>
+</main>
+
+<!-- Mini player -->
+<div id="mini" class="mini glass hidden">
+  <div class="art" id="miniArt"></div>
+  <div class="txt"><b id="miniName"></b><span id="miniSub"></span></div>
+  <button class="round" id="miniPlay" title="Afspelen/pauze"></button>
+  <div class="prog"><i id="miniProg"></i></div>
+</div>
+
+<!-- Immersieve speler -->
+<div id="stage" class="stage hidden">
+  <canvas id="stCanvas"></canvas>
+  <div class="st-top">
+    <button class="icon-btn glass" id="stClose" title="Minimaliseren (Esc)">⌄</button>
+    <div class="st-title"><div class="st-cat" id="stCat"></div><div class="st-name" id="stName"></div><div class="st-for" id="stFor"></div></div>
+    <button class="icon-btn glass" id="stFav" title="Favoriet">♡</button>
+  </div>
+  <div class="st-center">
+    <div class="st-breath" id="stBreath"></div>
+    <div class="st-hz"><span id="stHz">—</span><small>Hz</small></div>
+    <div class="st-mode" id="stMode"></div>
+  </div>
+  <div class="st-bottom">
+    <div class="st-setup glass" id="stSetup">
+      <label>Voor wie<select id="stPerson"></select></label>
+      <label>Intentie<input id="stIntent" placeholder="bijv. rust en herstel"></label>
+    </div>
+    <div class="st-info"><span id="stStep"></span><span id="stTime"></span></div>
+    <div class="st-controls">
+      <button class="icon-btn glass lg" id="stPrev" title="Vorige stap">⏮</button>
+      <button class="play-btn" id="stPlay" title="Afspelen (spatie)"></button>
+      <button class="icon-btn glass lg" id="stNext" title="Volgende stap">⏭</button>
+    </div>
+    <div class="st-chips">
+      <button class="chip" data-sheet="mix">🎧 Geluidslagen</button>
+      <button class="chip" data-sheet="breath">🫁 <span id="chipBreath"></span></button>
+      <button class="chip" data-sheet="end">⏱ <span id="chipEnd"></span></button>
+      <button class="chip" data-sheet="steps">☰ Stappen</button>
+      <button class="chip" id="stWav">⬇ WAV</button>
+      <button class="chip hidden" id="stStop">■ Stoppen</button>
+    </div>
+  </div>
+  <div class="sheet glass" id="sheet"><div class="sheet-grip"></div><div id="sheetBody"></div></div>
+  <div class="done-card glass hidden" id="stDone">
+    <div class="emoji">✨</div>
+    <h2>Mooi gedaan</h2>
+    <p class="muted" id="doneInfo"></p>
+    <div class="stars" id="doneStars"></div>
+    <textarea id="doneNote" placeholder="Hoe voelde het? Wat viel je op?"></textarea>
+    <div class="row" style="justify-content:center"><button class="btn" id="doneSkip">Sluiten</button><button class="btn primary" id="doneSave">Bewaren in logboek</button></div>
+  </div>
+</div>
+
+<!-- Programma-editor -->
+<dialog id="progDlg">
+  <form method="dialog" id="progForm">
+    <h2 id="progDlgTitle">Programma</h2>
+    <div class="row" style="align-items:flex-start">
+      <label class="f" style="flex:2;min-width:200px"><span>Naam</span><input id="pName" required></label>
+      <label class="f" style="flex:1;min-width:160px"><span>Categorie</span><select id="pCat"></select></label>
+    </div>
+    <label class="f"><span>Omschrijving</span><textarea id="pDesc" style="min-height:60px"></textarea></label>
+    <div style="overflow-x:auto">
+      <table class="steptbl">
+        <thead><tr><th>Hz</th><th>Min</th><th>Modus</th><th>Draaggolf</th><th>Label</th><th></th></tr></thead>
+        <tbody id="pSteps"></tbody>
+      </table>
+    </div>
+    <p class="small muted">Bij <b>Auto</b> wordt alles onder 20 Hz een binaurale beat op de draaggolf, en daarboven een pure toon.</p>
+    <div class="row spread" style="margin-top:12px">
+      <button type="button" class="btn" id="pAddStep">+ Stap</button>
+      <div class="row"><button type="button" class="btn" id="pCancel">Annuleren</button><button type="submit" class="btn primary">Opslaan</button></div>
+    </div>
+  </form>
+</dialog>
+
+<!-- Persoon-editor -->
+<dialog id="personDlg" style="width:min(520px,calc(100vw - 24px))">
+  <form method="dialog" id="personForm">
+    <h2>Persoon</h2>
+    <label class="f"><span>Naam</span><input id="peName" required></label>
+    <label class="f"><span>Standaard intentie</span><input id="peIntent" placeholder="bijv. beter slapen"></label>
+    <label class="f"><span>Notities</span><textarea id="peNotes"></textarea></label>
+    <div class="row spread">
+      <button type="button" class="btn danger" id="peDelete">Verwijderen</button>
+      <div class="row"><button type="button" class="btn" id="peCancel">Annuleren</button><button type="submit" class="btn primary">Opslaan</button></div>
+    </div>
+  </form>
+</dialog>
+
+<!-- Instellingen -->
+<dialog id="setDlg" style="width:min(560px,calc(100vw - 24px))">
+  <h2>Instellingen</h2>
+  <label class="f"><span>Golfvorm voor pure tonen</span>
+    <select id="setWave"><option value="sine">Sinus · zacht en rond</option><option value="triangle">Driehoek · iets helderder</option><option value="square">Blok · scherp</option><option value="sawtooth">Zaagtand · rijk aan boventonen</option></select></label>
+  <label class="f"><span>Overgang tussen stappen (seconden)</span><input type="number" id="setFade" min="0" max="10" step="0.5"></label>
+  <label class="f"><span>Standaard draaggolf voor binaurale en isochrone tonen (Hz)</span><input type="number" id="setCarrier" min="40" max="1000"></label>
+  <label class="f"><span>Doorspelen met vergrendeld scherm</span>
+    <select id="setBg"><option value="auto">Automatisch (aan op telefoon en tablet)</option><option value="on">Altijd aan</option><option value="off">Uit (live geluid met golfvorm-animatie)</option></select></label>
+  <p class="small muted" id="bgStatus" style="margin:-4px 0 12px"></p>
+  <div class="panel" style="padding:16px;margin:16px 0">
+    <b>Back-up</b>
+    <p class="small muted" style="margin:4px 0 12px">Je gegevens staan alleen in deze browser. Zet af en toe een back-up in je FreqHeal-map op OneDrive.</p>
+    <div class="row"><button class="btn" id="exportBtn">⬇ Exporteren</button><label class="btn">⬆ Importeren<input type="file" id="importFile" accept="application/json" hidden></label></div>
+  </div>
+  <div class="row" style="justify-content:flex-end"><button class="btn primary" id="setClose">Klaar</button></div>
+</dialog>
+
+<div id="toast"></div>
+
+<script>
+"use strict";
+/* ============ Helpers ============ */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const fmt = s => { if (!isFinite(s)) return '∞'; s = Math.max(0, Math.round(s)); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60;
+  return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0'); };
+const fmtMin = s => Math.round(s / 60) + ' min';
+const fmtHz = hz => (+hz).toLocaleString('nl-NL', { maximumFractionDigits: 2 });
+const hexA = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${a})`; };
+const dayKey = d => { d = new Date(d); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const ICON = {
+  play: '<svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>',
+  pause: '<svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4.5" height="14" rx="1.5"/><rect x="13.5" y="5" width="4.5" height="14" rx="1.5"/></svg>',
+};
+const icon = (name, size) => ICON[name].replace(/width="30" height="30"/, `width="${size}" height="${size}"`);
+let toastT; function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2600); }
+
+/* ============ Categorieën & programma's ============ */
+const CATS = {
+  'Slapen':     { icon:'🌙', g:['#5b4bdb','#1a1650'], tag:'Wegzakken en doorslapen' },
+  'Ontspannen': { icon:'🌊', g:['#19b6ad','#1d3f8f'], tag:'Stress laten zakken' },
+  'Focus':      { icon:'🎯', g:['#f5a524','#c2410c'], tag:'Scherp en geconcentreerd' },
+  'Meditatie':  { icon:'🧘', g:['#a560f7','#47168f'], tag:'Stil worden van binnen' },
+  'Energie':    { icon:'⚡', g:['#ff4d6d','#f98b16'], tag:'Opladen en wakker worden' },
+  'Aarding':    { icon:'🌍', g:['#2fbf6b','#12482c'], tag:'Terug naar de aarde' },
+  'Chakra':     { icon:'🌈', g:['#ec4899','#5b5cf0'], tag:'Energiecentra in balans' },
+  'Solfeggio':  { icon:'✨', g:['#f472b6','#8a2be2'], tag:'Eeuwenoude heilige tonen' },
+  'Eigen':      { icon:'🛠️', g:['#6b7a99','#222a3d'], tag:'Jouw eigen creaties' },
+};
+const cat = name => CATS[name] || CATS.Eigen;
+const S = (hz, min, mode = 'auto', label = '', carrier = null) => ({ hz, sec: Math.round(min * 60), mode, label, carrier });
+const BUILTIN = [
+  { id:'b-sleep', name:'Inslapen', cat:'Slapen', breath:'478', desc:'Je hersengolven zakken langzaam van theta naar diepe delta. Zet het volume laag en laat je meevoeren.',
+    steps:[S(6,5,'binaural','Theta'),S(4,5,'binaural','Theta/delta'),S(2.5,10,'binaural','Delta'),S(1.5,10,'binaural','Diepe delta')] },
+  { id:'b-deepsleep', name:'Diepe nachtrust', cat:'Slapen', desc:'45 minuten delta op een warme, lage draaggolf, voor een diepe en ongestoorde slaap.',
+    steps:[S(3,10,'binaural','Delta',150),S(2,15,'binaural','Delta',150),S(1,20,'binaural','Diepe delta',150)] },
+  { id:'b-nap', name:'Powernap', cat:'Slapen', desc:'20 minuten wegzakken in theta, met aan het eind een zachte terugkeer naar alfa en bèta.',
+    steps:[S(8,3,'binaural','Inloop'),S(5,12,'binaural','Theta'),S(10,3,'binaural','Ontwaken'),S(14,2,'binaural','Fris')] },
+  { id:'b-relax', name:'Diepe ontspanning', cat:'Ontspannen', breath:'calm', desc:'Binaurale beats die geleidelijk zakken van alfa via theta. Ideaal na een drukke dag.',
+    steps:[S(10,5,'binaural','Alfa'),S(8,5,'binaural','Alfa/theta'),S(6,8,'binaural','Theta'),S(4,7,'binaural','Theta/delta')] },
+  { id:'b-stress', name:'Stress-reset', cat:'Ontspannen', breath:'box', desc:'Tien minuten om terug te komen in je lijf, met box-ademhaling en alfagolven.',
+    steps:[S(12,2,'binaural','Landen'),S(10,4,'binaural','Alfa'),S(7.83,4,'binaural','Schumann')] },
+  { id:'b-heart', name:'Hartcoherentie', cat:'Ontspannen', breath:'coherent', desc:'639 Hz (verbinding) gecombineerd met een ademritme van 5 in, 5 uit, voor een rustig hartritme.',
+    steps:[S(639,10,'tone','Hart')] },
+  { id:'b-focus', name:'Focus', cat:'Focus', desc:'Bèta om je te concentreren, met een afsluiting op 40 Hz gamma (isochroon).',
+    steps:[S(14,15,'binaural','Bèta'),S(40,5,'isochronic','Gamma')] },
+  { id:'b-deepwork', name:'Diep werk', cat:'Focus', desc:'45 minuten ononderbroken concentratie met een korte, rustige afbouw aan het eind.',
+    steps:[S(12,5,'binaural','Opstarten'),S(15,20,'binaural','Bèta'),S(16,15,'binaural','Bèta'),S(10,5,'binaural','Afbouw')] },
+  { id:'b-study', name:'Studeren', cat:'Focus', desc:'Ontspannen alertheid waarin je makkelijk nieuwe dingen opneemt.',
+    steps:[S(10,5,'binaural','Alfa'),S(12,10,'binaural','Alfa/bèta'),S(14,10,'binaural','Bèta')] },
+  { id:'b-meditate', name:'Meditatie', cat:'Meditatie', breath:'calm', desc:'Stabiele theta voor een diepe meditatie.', steps:[S(7.5,3,'binaural','Inloop'),S(6,17,'binaural','Theta')] },
+  { id:'b-flow', name:'Creatieve flow', cat:'Meditatie', desc:'Op de grens van alfa en theta, waar ideeën vrij beginnen te stromen.',
+    steps:[S(9,4,'binaural','Alfa'),S(7.5,10,'binaural','Alfa/theta'),S(8,6,'binaural','Flow')] },
+  { id:'b-trance', name:'Diepe trance', cat:'Meditatie', desc:'Diep in theta, voor gevorderde mediteerders en reizen naar binnen.',
+    steps:[S(6,5,'binaural','Theta'),S(5,10,'binaural','Diepe theta'),S(4.5,15,'binaural','Trance')] },
+  { id:'b-morning', name:'Ochtendboost', cat:'Energie', breath:'box', desc:'Van alfa naar bèta: zo start je je dag helder en energiek.',
+    steps:[S(10,3,'binaural','Wakker worden'),S(14,4,'binaural','Bèta'),S(18,4,'isochronic','Hoog bèta'),S(20,4,'isochronic','Energie')] },
+  { id:'b-gamma', name:'Gamma-helderheid', cat:'Energie', desc:'40 Hz isochrone pulsen voor een helder en wakker gevoel.', steps:[S(40,10,'isochronic','Gamma')] },
+  { id:'b-schumann', name:'Schumann-resonantie', cat:'Aarding', desc:'De "hartslag" van de aarde: 7,83 Hz als binaurale beat op de Om-toon (136,1 Hz).', steps:[S(7.83,20,'binaural','Schumann',136.1)] },
+  { id:'b-432', name:'432 Hz Aarding', cat:'Aarding', desc:'Een warme, rustige toon op 432 Hz.', steps:[S(432,10,'tone')] },
+  { id:'b-planets', name:'Kosmische octaven', cat:'Aarding', desc:'Planetaire tonen volgens Hans Cousto: de Zon, de Aarde (Om) en de Maan.',
+    steps:[S(126.22,5,'tone','Zon'),S(136.10,5,'tone','Aarde / Om'),S(210.42,5,'tone','Maan')] },
+  { id:'b-chakra', name:'Chakra-balans', cat:'Chakra', desc:'Van het wortelchakra naar het kruinchakra, elk met de bijbehorende solfeggio-toon.',
+    steps:[S(396,3,'tone','Wortel'),S(417,3,'tone','Sacraal'),S(528,3,'tone','Zonnevlecht'),S(639,3,'tone','Hart'),S(741,3,'tone','Keel'),S(852,3,'tone','Derde oog'),S(963,3,'tone','Kruin')] },
+  { id:'b-heartchakra', name:'Hartchakra openen', cat:'Chakra', breath:'coherent', desc:'639 Hz met een zachte alfabeat op dezelfde draaggolf.',
+    steps:[S(639,6,'tone','Hart'),S(10,6,'binaural','Alfa op 639',639),S(639,6,'tone','Hart')] },
+  { id:'b-solfeggio', name:'Solfeggio-reis', cat:'Solfeggio', desc:'Alle negen solfeggio-frequenties na elkaar, van laag naar hoog.',
+    steps:[S(174,3,'tone','Fundament'),S(285,3,'tone','Weefsel'),S(396,3,'tone','Loslaten'),S(417,3,'tone','Verandering'),S(528,3,'tone','Harmonie'),S(639,3,'tone','Verbinding'),S(741,3,'tone','Expressie'),S(852,3,'tone','Intuïtie'),S(963,3,'tone','Eenheid')] },
+  { id:'b-528', name:'528 Hz Harmonie', cat:'Solfeggio', desc:'Eén lange sessie op 528 Hz, ook wel de "liefdesfrequentie" genoemd.', steps:[S(528,15,'tone','Harmonie')] },
+  { id:'b-396', name:'396 Hz Loslaten', cat:'Solfeggio', desc:'Traditioneel gekoppeld aan het loslaten van angst en schuld.', steps:[S(396,12,'tone','Loslaten')] },
+  { id:'b-963', name:'963 Hz Kruin', cat:'Solfeggio', desc:'De hoogste solfeggio-toon, gekoppeld aan eenheid en verbinding met het grotere geheel.', steps:[S(963,12,'tone','Eenheid')] },
+];
+
+/* ============ Opslag ============ */
+const KEY = 'freqheal.v1';
+const DEF_SETTINGS = { volume:60, toneLevel:.8, wave:'sine', fade:2, carrier:200, endMode:'once', breath:'off', bgPlay:'auto' };
+let db;
+function load(){
+  let d = null; try { d = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
+  d = d && typeof d === 'object' ? d : {};
+  ['programs','people','sessions','favs'].forEach(k => d[k] = Array.isArray(d[k]) ? d[k] : []);
+  d.ambient = d.ambient && typeof d.ambient === 'object' ? d.ambient : {};
+  d.settings = Object.assign({}, DEF_SETTINGS, d.settings || {});
+  db = d;
+}
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) { toast('Opslaan mislukt: ' + e.message); } }
+load();
+
+const allPrograms = () => [...BUILTIN, ...db.programs];
+const getProgram = id => id === 'studio' ? studioProgram() : allPrograms().find(p => p.id === id);
+const totalSec = p => p.steps.reduce((a, s) => a + s.sec, 0);
+const resolveMode = s => s.mode === 'auto' ? (s.hz < 20 ? 'binaural' : 'tone') : s.mode;
+const MODE_LABEL = { tone:'Pure toon', binaural:'Binaurale beat', isochronic:'Isochrone pulsen' };
+const carrierOf = s => +s.carrier || +db.settings.carrier || 200;
+
+/* ============ Audio: stemmen ============ */
+function softSquare(ctx){ return ctx.createPeriodicWave(new Float32Array(8), new Float32Array([0,1,0,1/3,0,1/5,0,1/7])); }
+function buildVoice(ctx, dest, step, t){
+  const mode = resolveMode(step), carrier = carrierOf(step), wave = db.settings.wave;
+  const out = ctx.createGain(); out.gain.value = 0; out.connect(dest);
+  const nodes = []; let set;
+  const osc = (type, f) => { const o = ctx.createOscillator(); o.type = type; o.frequency.value = f; nodes.push(o); return o; };
+  const glide = (p, v) => p.setTargetAtTime(v, ctx.currentTime, 0.06);
+  if (mode === 'tone'){
+    const o = osc(wave, step.hz), g = ctx.createGain(); g.gain.value = wave === 'sine' ? 0.9 : 0.3;
+    o.connect(g).connect(out); set = hz => glide(o.frequency, hz);
+  } else if (mode === 'binaural'){
+    const m = ctx.createChannelMerger(2), g = ctx.createGain(); g.gain.value = 0.8;
+    const L = osc('sine', carrier - step.hz / 2), R = osc('sine', carrier + step.hz / 2);
+    L.connect(m, 0, 0); R.connect(m, 0, 1); m.connect(g).connect(out);
+    set = (hz, c) => { glide(L.frequency, c - hz / 2); glide(R.frequency, c + hz / 2); };
+  } else {
+    const o = osc('sine', carrier), amp = ctx.createGain(); amp.gain.value = 0.5;
+    const lfo = ctx.createOscillator(); lfo.setPeriodicWave(softSquare(ctx)); lfo.frequency.value = step.hz; nodes.push(lfo);
+    const depth = ctx.createGain(); depth.gain.value = 0.48;
+    lfo.connect(depth).connect(amp.gain); o.connect(amp).connect(out);
+    set = (hz, c) => { glide(o.frequency, c); glide(lfo.frequency, hz); };
+  }
+  nodes.forEach(n => n.start(t));
+  return { out, nodes, mode, wave, set };
+}
+
+/* ============ Audio: geluidslagen (procedureel) ============ */
+const AMB = {
+  rain:  { n:'Regen',        i:'🌧️', k:.9 },
+  ocean: { n:'Oceaan',       i:'🌊', k:1.1 },
+  wind:  { n:'Wind',         i:'🍃', k:1.2 },
+  fire:  { n:'Kampvuur',     i:'🔥', k:.9 },
+  bowl:  { n:'Klankschaal',  i:'🔔', k:.5 },
+  brown: { n:'Bruine ruis',  i:'🟤', k:1.0 },
+  pink:  { n:'Roze ruis',    i:'🌸', k:.55 },
+  white: { n:'Witte ruis',   i:'⚪', k:.25 },
+};
+const SCAPES = [
+  { n:'Stilte', m:{} },
+  { n:'🌧️ Regenachtige nacht', m:{ rain:.65, brown:.25 } },
+  { n:'🏖️ Aan zee', m:{ ocean:.7, wind:.2 } },
+  { n:'🔥 Haardvuur', m:{ fire:.6, rain:.25 } },
+  { n:'🛕 Tempel', m:{ bowl:.5, wind:.15 } },
+  { n:'🎧 Diepe focus', m:{ brown:.55 } },
+];
+const bufCache = {};
+function getBuf(ctx, kind, secs){
+  secs = secs || (kind === 'bowl' ? 13 : 9);
+  const key = kind + ctx.sampleRate + '_' + secs; if (bufCache[key]) return bufCache[key];
+  const sr = ctx.sampleRate, len = Math.floor(sr * secs), X = Math.floor(sr * .5);
+  const buf = ctx.createBuffer(2, len, sr);
+  for (let ch = 0; ch < 2; ch++){
+    const raw = new Float32Array(len + X); const R = () => Math.random() * 2 - 1;
+    if (kind === 'white') for (let i = 0; i < raw.length; i++) raw[i] = R() * .5;
+    if (kind === 'pink' || kind === 'rain'){
+      let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+      for (let i = 0; i < raw.length; i++){ const w = R();
+        b0=.99886*b0+w*.0555179; b1=.99332*b1+w*.0750759; b2=.969*b2+w*.153852; b3=.8665*b3+w*.3104856; b4=.55*b4+w*.5329522; b5=-.7616*b5-w*.016898;
+        raw[i]=(b0+b1+b2+b3+b4+b5+b6+w*.5362)*.11; b6=w*.115926; }
+    }
+    if (kind === 'brown' || kind === 'fire'){ let l = 0; for (let i = 0; i < raw.length; i++){ l = (l + .02 * R()) / 1.02; raw[i] = l * 3.5; } }
+    if (kind === 'rain'){
+      for (let i = 0; i < raw.length; i++) raw[i] *= .35;
+      const drops = secs * 55;
+      for (let d = 0; d < drops; d++){ const p = Math.floor(Math.random() * len), L = Math.floor(sr * (.002 + Math.random() * .01)), a = .08 + Math.random() ** 3 * .7;
+        for (let j = 0; j < L && p + j < raw.length; j++) raw[p + j] += R() * a * Math.exp(-j / (L / 4)); }
+    }
+    if (kind === 'fire'){
+      for (let i = 0; i < raw.length; i++) raw[i] *= .45;
+      const cr = secs * 9;
+      for (let d = 0; d < cr; d++){ const p = Math.floor(Math.random() * len), L = Math.floor(sr * (.0008 + Math.random() * .005)), a = .2 + Math.random() * .8;
+        for (let j = 0; j < L && p + j < raw.length; j++) raw[p + j] += R() * a * Math.exp(-j / (L / 3)); }
+      for (let d = 0; d < secs * 1.2; d++){ const p = Math.floor(Math.random() * len), L = Math.floor(sr * .03), a = .5 + Math.random() * .5;
+        for (let j = 0; j < L && p + j < raw.length; j++) raw[p + j] += Math.sin(j / sr * 2 * Math.PI * 180) * a * Math.exp(-j / (L / 5)); }
+    }
+    if (kind === 'bowl'){
+      const f0 = 174 + ch * .6, parts = [[1,1,7],[2.76,.5,4.5],[5.4,.28,2.6],[8.93,.14,1.6]], st = Math.floor(sr * .05);
+      for (let i = st; i < raw.length; i++){ const t = (i - st) / sr; let v = 0;
+        for (const [r, a, dk] of parts) v += Math.sin(2 * Math.PI * f0 * r * t) * a * Math.exp(-t / dk) * (1 + .15 * Math.sin(2 * Math.PI * .9 * t));
+        raw[i] = v * .4 * Math.min(1, (i - st) / (sr * .004)); }
+    }
+    const d = buf.getChannelData(ch);
+    for (let i = 0; i < len; i++) d[i] = raw[i];
+    for (let i = 0; i < X; i++){ const a = i / X; d[i] = raw[i] * a + raw[len + i] * (1 - a); } // naadloze loop
+  }
+  return bufCache[key] = buf;
+}
+function buildLayer(ctx, dest, kind, level, t, loopSecs){
+  // loopSecs: alles precies periodiek maken (voor de achtergrondmodus)
+  const B = k => getBuf(ctx, k, loopSecs ? (k === 'bowl' ? loopSecs / 2 : loopSecs) : 0);
+  const q = f => loopSecs ? Math.max(1, Math.round(f * loopSecs)) / loopSecs : f;
+  const g = ctx.createGain(); g.gain.value = 0; g.connect(dest);
+  const srcs = [];
+  const src = ctx.createBufferSource(); src.loop = true; srcs.push(src);
+  const lfo = (f, amt, param) => { const o = ctx.createOscillator(); o.frequency.value = q(f); const a = ctx.createGain(); a.gain.value = amt; o.connect(a).connect(param); srcs.push(o); };
+  const bq = (type, f, q = .7) => { const b = ctx.createBiquadFilter(); b.type = type; b.frequency.value = f; b.Q.value = q; return b; };
+  if (kind === 'white' || kind === 'pink' || kind === 'brown'){ src.buffer = B(kind); src.connect(g); }
+  if (kind === 'rain'){ src.buffer = B('rain'); src.connect(bq('highpass', 400)).connect(bq('lowpass', 9000)).connect(g); }
+  if (kind === 'ocean'){ src.buffer = B('brown'); const lp = bq('lowpass', 550, .4), sw = ctx.createGain(); sw.gain.value = .5;
+    lfo(.085, .45, sw.gain); lfo(.05, 300, lp.frequency); src.connect(lp).connect(sw).connect(g); }
+  if (kind === 'wind'){ src.buffer = B('pink'); const bp = bq('bandpass', 520, .9), sw = ctx.createGain(); sw.gain.value = .55;
+    lfo(.06, 320, bp.frequency); lfo(.13, .35, sw.gain); src.connect(bp).connect(sw).connect(g); }
+  if (kind === 'fire'){ src.buffer = B('fire'); src.connect(bq('lowpass', 7000)).connect(g); }
+  if (kind === 'bowl'){ src.buffer = B('bowl'); src.connect(g); }
+  srcs.forEach(s => s === src ? s.start(t, kind === 'bowl' ? 0 : Math.random() * 8) : s.start(t));
+  g.gain.setTargetAtTime(layerGain(kind, level), t, .6);
+  return { g, stop(at){ srcs.forEach(s => { try { s.stop(at); } catch (e) {} }); } };
+}
+const layerGain = (kind, v) => (v * v) * AMB[kind].k;
+
+/* ============ Audio: engine ============ */
+const engine = {
+  ctx:null, master:null, toneBus:null, ambBus:null, analyser:null, voice:null, layers:{}, ambOn:false,
+  ensure(){
+    if (this.ctx) return;
+    const C = window.AudioContext || window.webkitAudioContext; this.ctx = new C(); setAudioSession();
+    const c = this.ctx;
+    this.master = c.createGain(); this.toneBus = c.createGain(); this.ambBus = c.createGain(); this.analyser = c.createAnalyser(); this.analyser.fftSize = 2048;
+    const comp = c.createDynamicsCompressor(); comp.threshold.value = -6; comp.ratio.value = 4;
+    this.out = c.createGain(); // pauze-schakelaar
+    this.toneBus.connect(this.analyser).connect(this.master); this.ambBus.connect(this.master); this.master.connect(this.out).connect(comp).connect(c.destination);
+    this.levels();
+  },
+  levels(){ if (!this.ctx) return; const t = this.ctx.currentTime;
+    this.master.gain.setTargetAtTime((db.settings.volume / 100) ** 2, t, .05);
+    this.toneBus.gain.setTargetAtTime(db.settings.toneLevel, t, .05); },
+  play(step){
+    this.ensure(); const t = this.ctx.currentTime, f = Math.max(.05, +db.settings.fade || 0);
+    this.release(f); const v = buildVoice(this.ctx, this.toneBus, step, t);
+    v.out.gain.setValueAtTime(0, t); v.out.gain.linearRampToValueAtTime(1, t + f); this.voice = v;
+  },
+  retune(step){ const v = this.voice;
+    if (v && v.mode === resolveMode(step) && (v.mode !== 'tone' || v.wave === db.settings.wave)) v.set(step.hz, carrierOf(step)); else this.play(step); },
+  release(f = .3){ const v = this.voice; if (!v) return; this.voice = null; const t = this.ctx.currentTime;
+    v.out.gain.cancelScheduledValues(t); v.out.gain.setValueAtTime(v.out.gain.value, t); v.out.gain.linearRampToValueAtTime(0, t + f);
+    v.nodes.forEach(n => { try { n.stop(t + f + .05); } catch (e) {} }); setTimeout(() => v.out.disconnect(), (f + .3) * 1000); },
+  ambStart(){ this.ensure(); this.ambOn = true; Object.keys(AMB).forEach(k => { if ((db.ambient[k] || 0) > 0) this.ensureLayer(k); }); },
+  ensureLayer(k){ if (!this.layers[k]) this.layers[k] = buildLayer(this.ctx, this.ambBus, k, db.ambient[k] || 0, this.ctx.currentTime); },
+  ambSet(k, v){ db.ambient[k] = v; if (!this.ambOn) return; if (v > 0) this.ensureLayer(k);
+    const L = this.layers[k]; if (L) L.g.gain.setTargetAtTime(layerGain(k, v), this.ctx.currentTime, .15); },
+  ambStop(f = 1){ if (!this.ctx) return; const t = this.ctx.currentTime;
+    Object.values(this.layers).forEach(L => { L.g.gain.cancelScheduledValues(t); L.g.gain.setTargetAtTime(0, t, f / 3); L.stop(t + f + .5); });
+    this.layers = {}; this.ambOn = false; },
+};
+
+/* ============ Ademhaling ============ */
+const BREATH = {
+  off:      { n:'Geen ademgids', s:'Alleen een rustige pulsering' },
+  calm:     { n:'Rustig 4-6', s:'4 tellen in, 6 uit: kalmerend', p:[['in',4],['out',6]] },
+  coherent: { n:'Hartcoherentie 5-5', s:'6 ademhalingen per minuut', p:[['in',5],['out',5]] },
+  box:      { n:'Box 4-4-4-4', s:'In, vast, uit, vast: helder en gecentreerd', p:[['in',4],['hold',4],['out',4],['rest',4]] },
+  '478':    { n:'4-7-8 slaap', s:'In 4, vasthouden 7, uit 8', p:[['in',4],['hold',7],['out',8]] },
+};
+const PHASE = { in:'Adem in', hold:'Vasthouden', out:'Adem uit', rest:'Rust' };
+let breathT0 = performance.now();
+function breathState(){
+  const b = BREATH[db.settings.breath] || BREATH.off, t = (performance.now() - breathT0) / 1000;
+  if (!b.p) return { scale: .5 + .5 * Math.sin(t * Math.PI * 2 / 10), label:'' };
+  const cyc = b.p.reduce((a, x) => a + x[1], 0); let x = t % cyc;
+  for (const [ph, d] of b.p){ if (x < d){ const fr = x / d, e = .5 - .5 * Math.cos(fr * Math.PI);
+      const scale = ph === 'in' ? e : ph === 'out' ? 1 - e : ph === 'hold' ? 1 : 0;
+      return { scale, label: PHASE[ph] + ' · ' + Math.ceil(d - x) }; } x -= d; }
+  return { scale: 0, label: '' };
+}
+const END = { once:'Eén keer', loop:'Herhalen', '15':'15 min', '30':'30 min', '60':'60 min', '90':'90 min' };
+
+/* ============ Achtergrondmodus (audiobestand via service worker) ============ */
+const IS_MOBILE = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const STREAM_SR = 32000, AMB_LOOP = 30;
+function setAudioSession(){ try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {} } // stilschakelaar negeren (iOS 17+)
+const SILENT = URL.createObjectURL(encodeWav({ numberOfChannels:1, sampleRate:8000, length:800, getChannelData:() => new Float32Array(800) }));
+async function renderAmbientLoop(){
+  const act = Object.entries(db.ambient).filter(([, v]) => v > 0); if (!act.length) return null;
+  const L = AMB_LOOP, SR = STREAM_SR, oc = new OfflineAudioContext(2, SR * L * 2, SR);
+  const bus = oc.createGain(); bus.connect(oc.destination);
+  act.forEach(([k, v]) => buildLayer(oc, bus, k, v, 0, L));
+  const buf = await oc.startRendering(), n = SR * L, out = new Float32Array(n * 2), l = buf.getChannelData(0), r = buf.getChannelData(1);
+  for (let i = 0; i < n; i++){ out[2 * i] = l[n + i]; out[2 * i + 1] = r[n + i]; } // tweede helft = naadloze loop
+  return out;
+}
+const bg = {
+  audio:null, ignoreUntil:0,
+  available(){ return 'serviceWorker' in navigator && !!navigator.serviceWorker.controller; },
+  enabled(){ const m = db.settings.bgPlay; return this.available() && (m === 'on' || (m === 'auto' && IS_MOBILE)); },
+  el(){
+    if (this.audio) return this.audio;
+    const a = this.audio = new Audio(); a.preload = 'auto'; a.setAttribute('playsinline', ''); a.setAttribute('webkit-playsinline', '');
+    a.addEventListener('pause', () => { if (Date.now() < this.ignoreUntil || !pl.stream || !pl.playing || pl.preparing || a.ended) return; if (!pl.paused){ pl.paused = true; refreshAll(); } });
+    a.addEventListener('play', () => { if (Date.now() < this.ignoreUntil || !pl.stream || !pl.playing) return; if (pl.paused){ pl.paused = false; refreshAll(); } });
+    a.addEventListener('ended', () => { if (pl.stream && pl.playing && !pl.preparing) finish(true); });
+    return a;
+  },
+  unlock(){ const a = this.el(); this.ignoreUntil = Date.now() + 1500; a.src = SILENT; const p = a.play(); if (p) p.catch(() => {}); },
+  async load(url, at, play){
+    const a = this.el(); this.ignoreUntil = Date.now() + 3000;
+    a.src = url; a.volume = db.settings.volume / 100;
+    if (at > 0){
+      await new Promise((res, rej) => { a.addEventListener('loadedmetadata', res, { once:true }); a.addEventListener('error', () => rej(new Error('audio')), { once:true }); });
+      a.currentTime = at;
+    }
+    if (play) await a.play();
+  },
+  stop(){ const a = this.audio; if (!a) return; this.ignoreUntil = Date.now() + 1500; a.pause(); a.removeAttribute('src'); a.load(); },
+  async prepare(p){
+    const id = uid(), steps = []; let st = 0;
+    for (const s of p.steps){ steps.push({ hz:+s.hz, sec:s.sec, mode:resolveMode(s), carrier:carrierOf(s), start:st }); st += s.sec; }
+    const m = db.settings.endMode, total = m === 'once' ? st : m === 'loop' ? 4 * 3600 : +m * 60;
+    const amb = await renderAmbientLoop();
+    const cfg = { sr:STREAM_SR, steps, cycle:st, total, wave:db.settings.wave, tone:db.settings.toneLevel, fade:+db.settings.fade || 0, gain:.6, amb:!!amb };
+    const c = await caches.open('fh-sessions');
+    for (const k of await c.keys()) await c.delete(k);
+    const base = new URL('fh-session/' + id, location.href).href;
+    await c.put(base + '.json', new Response(JSON.stringify(cfg), { headers:{ 'Content-Type':'application/json' } }));
+    if (amb) await c.put(base + '.amb', new Response(amb.buffer));
+    return { url: new URL('fh-stream/' + id + '.wav', location.href).href, total };
+  },
+};
+let rebuildT = null;
+function streamRebuild(){ // mixer of duur aangepast tijdens het afspelen: bestand opnieuw opbouwen en verder op dezelfde plek
+  if (!(pl.stream && pl.playing)) return;
+  clearTimeout(rebuildT);
+  rebuildT = setTimeout(async () => {
+    if (!(pl.stream && pl.playing) || pl.preparing) return;
+    const a = bg.audio, t = a.currentTime, wasPaused = a.paused;
+    pl.preparing = true;
+    try { const r = await bg.prepare(pl.program); if (!pl.playing) return; pl.total = r.total; await bg.load(r.url, Math.min(t, r.total - 1), !wasPaused); }
+    catch (e){ console.warn(e); }
+    pl.preparing = false; refreshAll();
+  }, 700);
+}
+
+/* ============ Speler ============ */
+const pl = { program:null, personId:'', intent:'', idx:0, stepStart:0, doneBefore:0, loops:0, playing:false, paused:false, pausedTotal:0, pauseStart:0,
+  startedAt:null, timer:null, lastSessionId:null, rating:0, stream:false, preparing:false, total:0 };
+let stageOpen = false;
+const stepStartOf = (p, i) => p.steps.slice(0, i).reduce((a, s) => a + s.sec, 0);
+
+// Web Audio-klok: loopt niet door tijdens pauze
+function clock(){ const t = engine.ctx.currentTime; return (pl.paused ? pl.pauseStart : t) - pl.pausedTotal; }
+function setOut(on, tc = .08){ const g = engine.out.gain, t = engine.ctx.currentTime; g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.setTargetAtTime(on ? 1 : 0, t, tc); }
+// Achtergrondmodus: de positie volgt uit de speeltijd van het audiobestand
+function syncStream(){
+  const p = pl.program, C = totalSec(p), t = Math.min(bg.audio.currentTime, Math.max(0, pl.total - .001));
+  const k = Math.floor(t / C); let tc = t - k * C, i = 0;
+  while (i < p.steps.length - 1 && tc >= p.steps[i].sec){ tc -= p.steps[i].sec; i++; }
+  pl.loops = k; pl.idx = i; pl.doneBefore = stepStartOf(p, i);
+}
+function stepElapsed(){
+  if (!pl.playing) return 0;
+  if (pl.stream){ if (pl.preparing) return pl.lastElapsed || 0; syncStream(); return pl.lastElapsed = bg.audio.currentTime - pl.loops * totalSec(pl.program) - pl.doneBefore; }
+  return clock() - pl.stepStart;
+}
+function playedSeconds(){
+  const p = pl.program; if (!p) return 0;
+  if (pl.stream && pl.playing){ if (!pl.preparing) pl.lastPlayed = bg.audio.currentTime; return pl.lastPlayed || 0; }
+  return pl.loops * totalSec(p) + pl.doneBefore + Math.min(stepElapsed(), p.steps[pl.idx]?.sec || 0);
+}
+function sessionTotal(){ const m = db.settings.endMode; return /^\d+$/.test(m) ? +m * 60 : m === 'loop' ? Infinity : totalSec(pl.program); }
+function progress(){ const tot = sessionTotal(); return isFinite(tot) ? clamp(playedSeconds() / tot, 0, 1) : (playedSeconds() % totalSec(pl.program)) / totalSec(pl.program); }
+
+function setProgram(p){ pl.program = p; pl.idx = 0; pl.doneBefore = 0; pl.loops = 0; if (p.breath && !pl.playing){ db.settings.breath = p.breath; breathT0 = performance.now(); } }
+
+async function startSession(){
+  if (!pl.program || pl.preparing) return;
+  const useStream = pl.program.id !== 'studio' && bg.enabled();
+  if (useStream) bg.unlock(); // moet direct binnen de tik gebeuren (iOS)
+  else { engine.ensure(); if (engine.ctx.state !== 'running') engine.ctx.resume(); }
+  setAudioSession();
+  Object.assign(pl, { playing:true, paused:false, pausedTotal:0, pauseStart:0, startedAt:new Date().toISOString(), loops:0, idx:0, doneBefore:0,
+    stream:useStream, preparing:useStream, lastPlayed:0, lastElapsed:0 });
+  breathT0 = performance.now();
+  $('#stDone').classList.add('hidden');
+  clearInterval(pl.timer); pl.timer = setInterval(tick, 250);
+  requestWakeLock();
+  if (useStream){
+    refreshAll(); $('#stStep').textContent = 'Sessie wordt voorbereid…';
+    try {
+      const r = await bg.prepare(pl.program);
+      if (!pl.playing) return; // tussentijds gestopt
+      pl.total = r.total; await bg.load(r.url, 0, true); pl.preparing = false;
+    } catch (e){
+      console.warn(e); bg.stop(); if (!pl.playing) return;
+      pl.preparing = false; pl.stream = false; toast('Achtergrondmodus lukte niet, ik speel gewoon af');
+    }
+  }
+  if (!pl.stream){
+    engine.ensure(); if (engine.ctx.state !== 'running') await engine.ctx.resume();
+    setOut(true, .01); engine.ambStart(); startStep(0);
+  }
+  mediaSession(); refreshAll(); renderSheet();
+}
+function startStep(i){ // alleen Web Audio
+  const p = pl.program; pl.idx = i; pl.doneBefore = stepStartOf(p, i);
+  engine.play(p.steps[i]); pl.stepStart = clock(); updateStageStatic(); renderSheet();
+}
+function pause(){
+  if (!pl.playing || pl.paused || pl.preparing) return;
+  if (pl.stream){ pl.paused = true; bg.audio.pause(); return; }
+  pl.pauseStart = engine.ctx.currentTime; pl.paused = true; setOut(false);
+}
+function resume(){
+  if (!pl.playing || !pl.paused) return;
+  pl.paused = false;
+  if (pl.stream){ bg.audio.play().catch(() => {}); return; }
+  pl.pausedTotal += engine.ctx.currentTime - pl.pauseStart;
+  if (engine.ctx.state !== 'running') engine.ctx.resume(); setOut(true);
+}
+function togglePlay(){
+  if (!pl.playing) return startSession();
+  if (pl.preparing) return;
+  pl.paused ? resume() : pause();
+  if (navigator.mediaSession) navigator.mediaSession.playbackState = pl.paused ? 'paused' : 'playing';
+  refreshAll();
+}
+function tick(){
+  if (!pl.playing || pl.preparing) return;
+  if (pl.stream){
+    const prev = pl.idx; syncStream();
+    if (pl.idx !== prev){ updateStageStatic(); renderSheet(); }
+    if (bg.audio.ended || bg.audio.currentTime >= pl.total - .05) return finish(true);
+    return updateTime();
+  }
+  const p = pl.program, s = p.steps[pl.idx], mode = db.settings.endMode;
+  if (stepElapsed() >= s.sec){
+    if (pl.idx + 1 < p.steps.length) startStep(pl.idx + 1);
+    else if (mode === 'once') return finish(true);
+    else { pl.loops++; startStep(0); }
+  }
+  if (/^\d+$/.test(mode) && playedSeconds() >= +mode * 60) return finish(true);
+  updateTime();
+}
+function gotoStep(n){
+  const p = pl.program; if (!p) return; n = clamp(n, 0, p.steps.length - 1);
+  if (!pl.playing){ pl.idx = n; updateStageStatic(); renderSheet(); return; }
+  if (pl.preparing) return;
+  if (pl.stream){ bg.audio.currentTime = pl.loops * totalSec(p) + stepStartOf(p, n); resume(); syncStream(); updateStageStatic(); renderSheet(); refreshAll(); return; }
+  resume(); startStep(n); refreshAll();
+}
+function jump(d){ if (pl.program) gotoStep(pl.idx + d); }
+function finish(completed){
+  if (!pl.playing) return;
+  const secs = playedSeconds();
+  stopAudio(completed ? 4 : 1.2);
+  if (secs >= 20){
+    const s = logSession(secs, completed);
+    if (stageOpen) showDone(s); else toast('✨ Sessie bewaard in je logboek');
+  }
+  refreshAll();
+}
+function stopAudio(f){
+  clearInterval(pl.timer); clearTimeout(rebuildT);
+  if (pl.stream) bg.stop();
+  else if (engine.ctx){ if (pl.paused) f = .05; engine.release(f); engine.ambStop(f); }
+  Object.assign(pl, { playing:false, paused:false, preparing:false, stream:false, idx:0, doneBefore:0, loops:0 });
+  releaseWakeLock(); if (navigator.mediaSession) navigator.mediaSession.playbackState = 'none';
+}
+function logSession(secs, completed){
+  const person = db.people.find(x => x.id === pl.personId);
+  const s = { id: uid(), date: pl.startedAt || new Date().toISOString(), programId: pl.program.id, programName: pl.program.name, cat: pl.program.cat || 'Eigen',
+    personId: person ? person.id : null, personName: person ? person.name : 'Mezelf', intent: pl.intent.trim(),
+    plannedSec: isFinite(sessionTotal()) ? sessionTotal() : totalSec(pl.program), playedSec: Math.round(secs), completed, note:'', rating:'' };
+  db.sessions.unshift(s); save(); pl.lastSessionId = s.id; return s;
+}
+
+/* ---- Stage ---- */
+function openStage(id){
+  const p = getProgram(id); if (!p) return;
+  if (pl.playing && pl.program.id !== p.id){
+    if (!confirm(`"${pl.program.name}" loopt nog. Wil je die stoppen en "${p.name}" starten?`)) return;
+    finish(false);
+  }
+  if (!pl.playing) setProgram(p);
+  $('#stDone').classList.add('hidden');
+  showStage();
+}
+function showStage(){ stageOpen = true; $('#stage').classList.remove('hidden'); closeSheet(); resizeCanvas(); updateStageStatic(); refreshAll(); if (!raf) raf = requestAnimationFrame(draw); }
+function hideStage(){ stageOpen = false; $('#stage').classList.add('hidden'); closeSheet(); refreshAll(); }
+
+function updateStageStatic(){
+  const p = pl.program; if (!p) return; const c = cat(p.cat), s = p.steps[pl.idx], m = resolveMode(s);
+  $('#stCat').textContent = c.icon + '  ' + (p.cat || 'Eigen');
+  $('#stName').textContent = p.name;
+  const person = db.people.find(x => x.id === pl.personId);
+  $('#stFor').textContent = pl.playing ? [person ? 'voor ' + person.name : 'voor jezelf', pl.intent].filter(Boolean).join(' · ') : '';
+  $('#stHz').textContent = fmtHz(s.hz);
+  $('#stMode').textContent = MODE_LABEL[m] + (m === 'binaural' ? ` · ${fmtHz(carrierOf(s) - s.hz/2)} / ${fmtHz(carrierOf(s) + s.hz/2)} Hz · 🎧 koptelefoon` : m === 'isochronic' ? ` · toon ${fmtHz(carrierOf(s))} Hz` : '');
+  $('#stSetup').classList.toggle('hidden', pl.playing);
+  $('#stStop').classList.toggle('hidden', !pl.playing);
+  $('#stFav').textContent = db.favs.includes(p.id) ? '♥' : '♡';
+  $('#stFav').style.color = db.favs.includes(p.id) ? '#ff7aa8' : '';
+  $('#stFav').style.visibility = p.id === 'studio' ? 'hidden' : 'visible';
+  $('#chipBreath').textContent = db.settings.breath === 'off' ? 'Ademhaling' : BREATH[db.settings.breath].n;
+  $('#chipEnd').textContent = END[db.settings.endMode];
+  if (!pl.playing){
+    $('#stPerson').innerHTML = `<option value="">Mezelf</option>` + db.people.map(x => `<option value="${esc(x.id)}">${esc(x.name)}</option>`).join('');
+    $('#stPerson').value = db.people.some(x => x.id === pl.personId) ? pl.personId : '';
+    $('#stIntent').value = pl.intent;
+  }
+  updateTime();
+}
+function updateTime(){
+  const p = pl.program; if (!p) return; const s = p.steps[pl.idx];
+  const left = pl.playing ? s.sec - stepElapsed() : s.sec;
+  $('#stStep').textContent = `Stap ${pl.idx + 1}/${p.steps.length}${s.label ? ' · ' + s.label : ''} · nog ${fmt(left)}`;
+  $('#stTime').textContent = `${fmt(playedSeconds())} / ${fmt(sessionTotal())}`;
+  $('#stPlay').innerHTML = pl.playing && !pl.paused ? icon('pause', 32) : icon('play', 32);
+  if (pl.playing){ $('#miniSub').textContent = `${fmtHz(s.hz)} Hz · ${fmt(playedSeconds())} / ${fmt(sessionTotal())}${pl.paused ? ' · gepauzeerd' : ''}`; $('#miniProg').style.width = progress() * 100 + '%'; }
+}
+function refreshAll(){
+  updateStageStatic();
+  const p = pl.program, showMini = pl.playing && !stageOpen;
+  $('#mini').classList.toggle('hidden', !showMini);
+  if (p){ const c = cat(p.cat); const mini = $('#mini'); mini.style.setProperty('--g0', c.g[0]); mini.style.setProperty('--g1', c.g[1]);
+    $('#miniArt').textContent = c.icon; $('#miniName').textContent = p.name; $('#miniPlay').innerHTML = pl.playing && !pl.paused ? icon('pause', 20) : icon('play', 20); }
+  // live-markering in kaarten / studio
+  $$('.pcard').forEach(el => el.classList.toggle('playing', pl.playing && el.dataset.open === p?.id));
+  if ($('#studio').classList.contains('active')) updateStudioPlayBtn();
+}
+
+/* ---- Sheets ---- */
+let sheetKind = null;
+function openSheet(kind){ sheetKind = kind; renderSheet(); $('#sheet').classList.add('open'); }
+function closeSheet(){ sheetKind = null; $('#sheet').classList.remove('open'); }
+function renderSheet(){
+  if (!sheetKind) return; const b = $('#sheetBody');
+  if (sheetKind === 'mix'){
+    b.innerHTML = `<h3>Geluidslagen</h3>
+      <div class="chips" style="margin-bottom:12px">${SCAPES.map((s, i) => `<button class="chip" data-scape="${i}">${s.n}</button>`).join('')}</div>
+      ${mixRow('vol', '🔊', 'Hoofdvolume', db.settings.volume / 100)}
+      ${mixRow('tone', '〰️', 'Frequentie', db.settings.toneLevel)}
+      <div style="height:1px;background:var(--line);margin:12px 0"></div>
+      ${Object.entries(AMB).map(([k, a]) => mixRow(k, a.i, a.n, db.ambient[k] || 0)).join('')}`;
+  } else if (sheetKind === 'breath'){
+    b.innerHTML = `<h3>Ademgids</h3>` + Object.entries(BREATH).map(([k, x]) => `<button class="opt ${db.settings.breath === k ? 'on' : ''}" data-breath="${k}"><span><b>${x.n}</b><br><small>${x.s}</small></span>${db.settings.breath === k ? '✓' : ''}</button>`).join('');
+  } else if (sheetKind === 'end'){
+    b.innerHTML = `<h3>Hoe lang?</h3>` + Object.entries(END).map(([k, n]) => `<button class="opt ${db.settings.endMode === k ? 'on' : ''}" data-end="${k}"><span><b>${n}</b><br><small>${k === 'once' ? 'Het programma speelt één keer en stopt dan' : k === 'loop' ? 'Blijft doorlopen tot je zelf stopt' : 'Herhaalt en zwakt na ' + n + ' zacht af. Fijn als slaaptimer'}</small></span>${db.settings.endMode === k ? '✓' : ''}</button>`).join('');
+  } else if (sheetKind === 'steps'){
+    const p = pl.program;
+    b.innerHTML = `<h3>${esc(p.name)}</h3><p class="small muted" style="margin:-6px 0 12px">${esc(p.desc || '')}</p><div class="steplist">` +
+      p.steps.map((s, i) => `<button class="opt ${i === pl.idx && pl.playing ? 'cur' : ''} ${pl.playing && i < pl.idx ? 'done' : ''}" data-step="${i}"><span><b>${fmtHz(s.hz)} Hz</b> ${s.label ? '· ' + esc(s.label) : ''}<br><small>${MODE_LABEL[resolveMode(s)]}</small></span><small>${fmt(s.sec)}</small></button>`).join('') + '</div>';
+  }
+}
+const mixRow = (k, ic, n, v) => `<div class="mixrow"><span class="ic">${ic}</span><div><label>${n}</label><input type="range" min="0" max="100" value="${Math.round(v * 100)}" data-mix="${k}"></div><output>${Math.round(v * 100)}%</output></div>`;
+$('#sheetBody').addEventListener('input', e => {
+  const k = e.target.dataset.mix; if (!k) return; const v = e.target.value / 100;
+  e.target.closest('.mixrow').querySelector('output').textContent = e.target.value + '%';
+  if (k === 'vol'){ db.settings.volume = +e.target.value; engine.levels(); if (bg.audio) bg.audio.volume = db.settings.volume / 100; }
+  else if (k === 'tone'){ db.settings.toneLevel = v; engine.levels(); streamRebuild(); }
+  else { engine.ambSet(k, v); streamRebuild(); }
+  save();
+});
+$('#sheetBody').addEventListener('click', e => {
+  const t = e.target.closest('button'); if (!t) return;
+  if (t.dataset.scape !== undefined){ const m = SCAPES[+t.dataset.scape].m; Object.keys(AMB).forEach(k => engine.ambSet(k, m[k] || 0)); save(); renderSheet(); streamRebuild(); }
+  if (t.dataset.breath){ db.settings.breath = t.dataset.breath; breathT0 = performance.now(); save(); renderSheet(); updateStageStatic(); }
+  if (t.dataset.end){ db.settings.endMode = t.dataset.end; save(); renderSheet(); updateStageStatic(); streamRebuild(); }
+  if (t.dataset.step !== undefined) gotoStep(+t.dataset.step);
+});
+$$('[data-sheet]').forEach(b => b.onclick = e => { e.stopPropagation(); sheetKind === b.dataset.sheet ? closeSheet() : openSheet(b.dataset.sheet); });
+$('#stCanvas').onclick = closeSheet;
+$('#stClose').onclick = hideStage;
+$('#stPlay').onclick = togglePlay;
+$('#stPrev').onclick = () => jump(-1);
+$('#stNext').onclick = () => jump(1);
+$('#stStop').onclick = () => finish(false);
+$('#stFav').onclick = () => { toggleFav(pl.program.id); updateStageStatic(); };
+$('#stWav').onclick = () => exportWav(pl.program);
+$('#stPerson').onchange = e => { pl.personId = e.target.value; const p = db.people.find(x => x.id === pl.personId); if (p && p.intent) { pl.intent = p.intent; $('#stIntent').value = p.intent; } };
+$('#stIntent').oninput = e => pl.intent = e.target.value;
+$('#mini').onclick = e => { if (e.target.closest('#miniPlay')) return; showStage(); };
+$('#miniPlay').onclick = togglePlay;
+
+/* ---- Afronden ---- */
+function showDone(s){
+  pl.rating = 0;
+  $('#doneInfo').textContent = `${fmtMin(s.playedSec)} ${s.programName}${s.personId ? ' voor ' + s.personName : ''}${s.completed ? '' : ' (eerder gestopt)'}`;
+  $('#doneNote').value = ''; drawStars(); $('#stDone').classList.remove('hidden');
+}
+function drawStars(){ $('#doneStars').innerHTML = [1,2,3,4,5].map(i => `<button class="${i <= pl.rating ? 'on' : ''}" data-r="${i}">★</button>`).join(''); }
+$('#doneStars').onclick = e => { const r = e.target.dataset.r; if (r){ pl.rating = +r; drawStars(); } };
+$('#doneSave').onclick = () => { const s = db.sessions.find(x => x.id === pl.lastSessionId);
+  if (s){ s.note = $('#doneNote').value.trim(); s.rating = pl.rating || ''; save(); }
+  $('#stDone').classList.add('hidden'); toast('Bewaard in je logboek'); };
+$('#doneSkip').onclick = () => $('#stDone').classList.add('hidden');
+
+/* ---- Wake lock & media session ---- */
+let wakeLock = null;
+async function requestWakeLock(){ try { wakeLock = await navigator.wakeLock?.request('screen'); } catch (e) {} }
+function releaseWakeLock(){ try { wakeLock?.release(); } catch (e) {} wakeLock = null; }
+function mediaSession(){
+  if (!('mediaSession' in navigator)) return;
+  try {
+    navigator.mediaSession.metadata = new MediaMetadata({ title: pl.program.name, artist: 'FreqHeal', album: pl.program.cat || 'Eigen' });
+    navigator.mediaSession.playbackState = 'playing';
+    navigator.mediaSession.setActionHandler('play', togglePlay);
+    navigator.mediaSession.setActionHandler('pause', togglePlay);
+    navigator.mediaSession.setActionHandler('nexttrack', () => jump(1));
+    navigator.mediaSession.setActionHandler('previoustrack', () => jump(-1));
+    navigator.mediaSession.setActionHandler('stop', () => finish(false));
+  } catch (e) {}
+}
+
+/* ---- Visuals ---- */
+const cv = $('#stCanvas'), g2 = cv.getContext('2d'); let raf = null, DPR = 1, waveBuf = null, rings = [], lastRing = 0;
+const parts = Array.from({ length: 80 }, () => ({ x: Math.random(), y: Math.random(), r: .5 + Math.random() * 1.8, v: .004 + Math.random() * .012, ph: Math.random() * 6.28 }));
+function resizeCanvas(){ DPR = Math.min(2, devicePixelRatio || 1); cv.width = innerWidth * DPR; cv.height = innerHeight * DPR; }
+addEventListener('resize', () => stageOpen && resizeCanvas());
+function draw(ts){
+  if (!stageOpen){ raf = null; return; }
+  raf = requestAnimationFrame(draw);
+  const w = cv.width, h = cv.height, t = ts / 1000, p = pl.program; if (!p) return;
+  const [c0, c1] = cat(p.cat).g, active = pl.playing && !pl.paused, sp = active ? 1 : .35;
+  g2.globalCompositeOperation = 'source-over'; g2.fillStyle = '#06070b'; g2.fillRect(0, 0, w, h);
+  g2.globalCompositeOperation = 'lighter';
+  const blobs = [[c0, .0], [c1, 2.1], [c0, 4.2], [c1, 1.3]];
+  blobs.forEach(([c, o], i) => {
+    const tt = REDUCED ? 0 : t * sp;
+    const x = w * (.5 + .34 * Math.sin(tt * .07 * (i + 1) + o)), y = h * (.42 + .28 * Math.cos(tt * .05 * (i + 1.3) + o)), r = Math.max(w, h) * (.38 + .06 * i);
+    const gr = g2.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, hexA(c, .30)); gr.addColorStop(1, hexA(c, 0));
+    g2.fillStyle = gr; g2.fillRect(0, 0, w, h);
+  });
+  // deeltjes
+  parts.forEach(q => { if (!REDUCED) { q.y -= q.v * sp * .016; if (q.y < -.02){ q.y = 1.02; q.x = Math.random(); } }
+    const a = .25 + .35 * Math.sin(t * 1.3 + q.ph); g2.fillStyle = `rgba(255,255,255,${Math.max(0, a) * .6})`;
+    g2.beginPath(); g2.arc(q.x * w, q.y * h, q.r * DPR, 0, 6.283); g2.fill(); });
+  g2.globalCompositeOperation = 'source-over';
+  // orb
+  const br = breathState(); const cx = w / 2, cy = h * .40, R0 = Math.min(w, h) * .17, R = R0 * (.82 + .24 * br.scale);
+  $('#stBreath').textContent = active ? br.label : '';
+  const glow = g2.createRadialGradient(cx, cy, R * .6, cx, cy, R * 2.4); glow.addColorStop(0, hexA(c0, .45)); glow.addColorStop(1, hexA(c0, 0));
+  g2.fillStyle = glow; g2.beginPath(); g2.arc(cx, cy, R * 2.4, 0, 6.283); g2.fill();
+  // ringen
+  if (active && !REDUCED && t - lastRing > 3.2){ rings.push(t); lastRing = t; }
+  rings = rings.filter(rt => t - rt < 5);
+  rings.forEach(rt => { const k = (t - rt) / 5; g2.strokeStyle = `rgba(255,255,255,${.28 * (1 - k)})`; g2.lineWidth = 1.5 * DPR;
+    g2.beginPath(); g2.arc(cx, cy, R * (1 + k * 1.6), 0, 6.283); g2.stroke(); });
+  const body = g2.createRadialGradient(cx - R * .35, cy - R * .4, R * .05, cx, cy, R);
+  body.addColorStop(0, 'rgba(255,255,255,.95)'); body.addColorStop(.25, hexA(c0, .95)); body.addColorStop(1, hexA(c1, .95));
+  g2.fillStyle = body; g2.beginPath();
+  // golfvorm-rand
+  if (active && engine.analyser && !pl.stream){
+    waveBuf = waveBuf || new Float32Array(engine.analyser.fftSize); engine.analyser.getFloatTimeDomainData(waveBuf);
+    const N = 160; for (let i = 0; i <= N; i++){ const a = i / N * 6.283, v = waveBuf[Math.floor(i / N * (waveBuf.length - 1))] || 0, rr = R + v * R * .09;
+      const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr; i ? g2.lineTo(x, y) : g2.moveTo(x, y); }
+  } else g2.arc(cx, cy, R, 0, 6.283);
+  g2.fill();
+  // voortgangsring
+  const PR = R0 * 1.42; g2.lineCap = 'round'; g2.lineWidth = 3 * DPR;
+  g2.strokeStyle = 'rgba(255,255,255,.12)'; g2.beginPath(); g2.arc(cx, cy, PR, 0, 6.283); g2.stroke();
+  if (pl.playing){ g2.strokeStyle = 'rgba(255,255,255,.85)'; g2.beginPath(); g2.arc(cx, cy, PR, -Math.PI / 2, -Math.PI / 2 + progress() * 6.283); g2.stroke(); }
+}
+
+/* ============ WAV-export ============ */
+async function exportWav(p){
+  if (!p) return; const total = totalSec(p);
+  if (total > 3600){ alert('WAV-export kan tot 60 minuten. Kort het programma in of maak een kopie met minder stappen.'); return; }
+  const amb = Object.entries(db.ambient).filter(([, v]) => v > 0);
+  if (!confirm(`"${p.name}" (${fmt(total)}) exporteren als WAV-bestand?${amb.length ? '\nJe huidige geluidslagen worden meegemixt.' : ''}\nHet bestand wordt ongeveer ${Math.round(total * 32000 * 4 / 1048576)} MB.`)) return;
+  toast('WAV wordt gemaakt…');
+  await new Promise(r => setTimeout(r, 50));
+  try {
+    const sr = 32000, oc = new OfflineAudioContext(2, Math.ceil(sr * (total + .5)), sr);
+    const master = oc.createGain(); master.gain.value = (db.settings.volume / 100) ** 2 * 1.1; master.connect(oc.destination);
+    const tb = oc.createGain(); tb.gain.value = db.settings.toneLevel; tb.connect(master);
+    const ab = oc.createGain(); ab.connect(master);
+    const f = Math.max(.05, +db.settings.fade || 0); let t = 0;
+    p.steps.forEach((s, i) => {
+      const v = buildVoice(oc, tb, s, t), end = t + s.sec, last = i === p.steps.length - 1, gg = v.out.gain;
+      gg.setValueAtTime(0, t); gg.linearRampToValueAtTime(1, t + (i ? f : 2));
+      if (last){ gg.setValueAtTime(1, Math.max(t + f, end - 3)); gg.linearRampToValueAtTime(0, end); v.nodes.forEach(n => n.stop(end + .05)); }
+      else { gg.setValueAtTime(1, end); gg.linearRampToValueAtTime(0, end + f); v.nodes.forEach(n => n.stop(end + f + .05)); }
+      t = end;
+    });
+    amb.forEach(([k, v]) => buildLayer(oc, ab, k, v, 0).stop(total + .5));
+    ab.gain.setValueAtTime(1, Math.max(0, total - 3)); ab.gain.linearRampToValueAtTime(0, total);
+    const buf = await oc.startRendering();
+    const blob = encodeWav(buf), a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = p.name.replace(/[^\w\- ]+/g, '').trim() + '.wav'; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000); toast('⬇ WAV klaar');
+  } catch (e){ alert('Export mislukt: ' + e.message); }
+}
+function encodeWav(buf){
+  const ch = buf.numberOfChannels, sr = buf.sampleRate, n = buf.length, dv = new DataView(new ArrayBuffer(44 + n * ch * 2));
+  const ws = (o, s) => [...s].forEach((c, i) => dv.setUint8(o + i, c.charCodeAt(0)));
+  ws(0, 'RIFF'); dv.setUint32(4, 36 + n * ch * 2, true); ws(8, 'WAVE'); ws(12, 'fmt '); dv.setUint32(16, 16, true); dv.setUint16(20, 1, true);
+  dv.setUint16(22, ch, true); dv.setUint32(24, sr, true); dv.setUint32(28, sr * ch * 2, true); dv.setUint16(32, ch * 2, true); dv.setUint16(34, 16, true);
+  ws(36, 'data'); dv.setUint32(40, n * ch * 2, true);
+  const data = [...Array(ch)].map((_, c) => buf.getChannelData(c)); let o = 44;
+  for (let i = 0; i < n; i++) for (let c = 0; c < ch; c++){ const v = Math.max(-1, Math.min(1, data[c][i])); dv.setInt16(o, v < 0 ? v * 32768 : v * 32767, true); o += 2; }
+  return new Blob([dv], { type: 'audio/wav' });
+}
+
+/* ============ Ontdek ============ */
+let filterCat = '', search = '';
+function toggleFav(id){ const i = db.favs.indexOf(id); i >= 0 ? db.favs.splice(i, 1) : db.favs.push(id); save(); if ($('#discover').classList.contains('active')) renderDiscover(); }
+function stats(){
+  const weekAgo = Date.now() - 7 * 864e5, days = new Set(db.sessions.map(s => dayKey(s.date)));
+  const week = db.sessions.filter(s => new Date(s.date) >= weekAgo).reduce((a, s) => a + s.playedSec, 0);
+  let d = new Date(), streak = 0; if (!days.has(dayKey(d))) d.setDate(d.getDate() - 1);
+  while (days.has(dayKey(d))){ streak++; d.setDate(d.getDate() - 1); }
+  return { week, streak, count: db.sessions.length, total: db.sessions.reduce((a, s) => a + s.playedSec, 0), people: new Set(db.sessions.filter(s => s.personId).map(s => s.personId)).size };
+}
+function spark(p){
+  const tot = totalSec(p); let x = 0;
+  return `<svg class="spark" viewBox="0 0 100 40" preserveAspectRatio="none">${p.steps.map(s => {
+    const w = s.sec / tot * 100, hh = 8 + clamp(Math.log10(s.hz) / 3.1, 0, 1) * 30, r = `<rect x="${(x + .6).toFixed(2)}" y="${(40 - hh).toFixed(2)}" width="${Math.max(.6, w - 1.2).toFixed(2)}" height="${hh.toFixed(2)}" rx="1.2"/>`;
+    x += w; return r; }).join('')}</svg>`;
+}
+function card(p){
+  const c = cat(p.cat), fav = db.favs.includes(p.id), playing = pl.playing && pl.program?.id === p.id, own = !p.id.startsWith('b-');
+  return `<article class="pcard ${playing ? 'playing' : ''}" data-open="${esc(p.id)}" style="--g0:${c.g[0]};--g1:${c.g[1]}">
+    <div class="pcard-art"><span class="pcard-icon">${c.icon}</span>${spark(p)}
+      <button class="fav ${fav ? 'on' : ''}" data-fav="${esc(p.id)}" title="Favoriet">${fav ? '♥' : '♡'}</button>
+      ${playing ? '<span class="eq"><i></i><i></i><i></i></span>' : ''}</div>
+    <div class="pcard-body">
+      <div class="pcard-meta"><span>${esc(p.cat || 'Eigen')}</span><span>${fmt(totalSec(p))}</span></div>
+      <h3>${esc(p.name)}</h3><p>${esc(p.desc || '')}</p>
+      <div class="freqs">${p.steps.slice(0, 5).map(s => `<span>${fmtHz(s.hz)} Hz</span>`).join('')}${p.steps.length > 5 ? `<span>+${p.steps.length - 5}</span>` : ''}</div>
+      <div class="pcard-actions">${own ? `<button class="link" data-edit="${esc(p.id)}">Bewerken</button><button class="link" data-del="${esc(p.id)}">Verwijderen</button>` : `<button class="link" data-copy="${esc(p.id)}">Aanpassen</button>`}<button class="link" data-wav="${esc(p.id)}">WAV</button></div>
+    </div></article>`;
+}
+function renderDiscover(){
+  const h = new Date().getHours();
+  const greet = h < 6 ? 'Goedenacht' : h < 12 ? 'Goedemorgen' : h < 18 ? 'Goedemiddag' : 'Goedenavond';
+  const rec = getProgram(h < 6 ? 'b-sleep' : h < 11 ? 'b-morning' : h < 14 ? 'b-focus' : h < 17 ? 'b-nap' : h < 22 ? 'b-relax' : 'b-sleep');
+  const rc = cat(rec.cat), st = stats(), person = db.people.find(x => x.id === pl.personId);
+  const cats = Object.keys(CATS).filter(k => k !== 'Eigen' || allPrograms().some(p => (p.cat || 'Eigen') === 'Eigen' || !CATS[p.cat]));
+  const favs = allPrograms().filter(p => db.favs.includes(p.id));
+  $('#discover').innerHTML = `
+    <div class="hero">
+      <div>
+        <div class="eyebrow">${greet} ✦</div>
+        <h1>Hoe wil je je <em>voelen</em>?</h1>
+        <p>Kies een stemming, of begin direct met de aanbeveling voor dit moment. Zet je koptelefoon op voor binaurale beats.</p>
+        <div class="stat-row">
+          <span class="stat">🔥 <b>${st.streak}</b> ${st.streak === 1 ? 'dag' : 'dagen'} op rij</span>
+          <span class="stat">⏱ <b>${Math.round(st.week / 60)}</b> min deze week</span>
+          <span class="stat">🎧 <b>${st.count}</b> sessies</span>
+        </div>
+      </div>
+      <button class="hero-rec" data-open="${rec.id}" style="--g0:${rc.g[0]};--g1:${rc.g[1]}">
+        <span class="big-icon">${rc.icon}</span>
+        <span class="eyebrow">Aanbevolen nu</span><b>${esc(rec.name)}</b><span style="opacity:.85">${fmt(totalSec(rec))} · ${esc(rec.cat)}</span>
+        <span class="go">${icon('play', 24)}</span>
+      </button>
+    </div>
+    ${person && !pl.playing ? `<div class="banner"><span class="avatar" style="width:38px;height:38px;font-size:15px;${avatarStyle(person)}">${initials(person.name)}</span><div style="flex:1"><b>Sessie voor ${esc(person.name)}</b><div class="small muted">Kies hieronder een programma${person.intent ? ' · intentie: ' + esc(person.intent) : ''}</div></div><button class="btn sm" data-clearperson>✕</button></div>` : ''}
+    <div class="moods">
+      <button class="mood all ${!filterCat ? 'on' : ''}" data-cat=""><span class="mi">✦</span><b>Alles</b><small>${allPrograms().length} programma's</small></button>
+      ${cats.map(k => { const c = CATS[k]; return `<button class="mood ${filterCat === k ? 'on' : ''}" data-cat="${k}" style="--g0:${c.g[0]};--g1:${c.g[1]}"><span class="mi">${c.icon}</span><b>${k}</b><small>${c.tag}</small></button>`; }).join('')}
+    </div>
+    ${favs.length && !filterCat ? `<div class="sub">♥ Favorieten</div><div class="grid" style="margin-bottom:28px">${favs.map(card).join('')}</div>` : ''}
+    <div class="toolbar"><h2>${filterCat ? CATS[filterCat].icon + ' ' + filterCat : "Alle programma's"}</h2>
+      <input id="search" placeholder="🔍  Zoek op naam of Hz…" value="${esc(search)}">
+      <button class="btn primary" data-new>+ Nieuw programma</button></div>
+    <div class="grid" id="discGrid"></div>`;
+  renderDiscGrid();
+  $('#search').oninput = e => { search = e.target.value; renderDiscGrid(); };
+}
+function renderDiscGrid(){
+  const q = search.toLowerCase();
+  const list = allPrograms().filter(p => (!filterCat || (CATS[p.cat] ? p.cat : 'Eigen') === filterCat) &&
+    (!q || (p.name + ' ' + (p.desc || '') + ' ' + p.cat + ' ' + p.steps.map(s => s.hz + ' ' + (s.label || '')).join(' ')).toLowerCase().includes(q)));
+  $('#discGrid').innerHTML = list.map(card).join('') || '<div class="empty" style="grid-column:1/-1">Geen programma\'s gevonden.</div>';
+}
+$('#discover').addEventListener('click', e => {
+  const t = e.target.closest('button,[data-open]'); if (!t) return;
+  if (t.dataset.fav){ e.stopPropagation(); return toggleFav(t.dataset.fav); }
+  if (t.dataset.cat !== undefined){ filterCat = filterCat === t.dataset.cat ? '' : t.dataset.cat; return renderDiscover(); }
+  if (t.hasAttribute('data-new')) return openEditor({ id:null, name:'', cat:'Eigen', desc:'', steps:[S(528,5,'auto')] });
+  if (t.hasAttribute('data-clearperson')){ pl.personId = ''; pl.intent = ''; return renderDiscover(); }
+  if (t.dataset.copy){ const p = getProgram(t.dataset.copy); return openEditor({ ...structuredClone(p), id:null, name:p.name + ' (eigen)' }); }
+  if (t.dataset.edit) return openEditor(structuredClone(getProgram(t.dataset.edit)));
+  if (t.dataset.wav) return exportWav(getProgram(t.dataset.wav));
+  if (t.dataset.del){ const p = getProgram(t.dataset.del); if (confirm(`"${p.name}" verwijderen?`)){ db.programs = db.programs.filter(x => x.id !== p.id); db.favs = db.favs.filter(x => x !== p.id); save(); renderDiscover(); } return; }
+  if (t.dataset.open) openStage(t.dataset.open);
+});
+
+/* ============ Studio ============ */
+const BANDS = [
+  { k:'Delta', a:.5, b:4,  c:'#6366f1', d:'Diepe, droomloze slaap en lichamelijk herstel.', cat:'Slapen' },
+  { k:'Theta', a:4,  b:8,  c:'#a855f7', d:'Meditatie, dromen, intuïtie en creativiteit.', cat:'Meditatie' },
+  { k:'Alfa',  a:8,  b:13, c:'#14b8a6', d:'Ontspannen alertheid, rustige focus en flow.', cat:'Ontspannen' },
+  { k:'Bèta',  a:13, b:30, c:'#f59e0b', d:'Concentratie, actief denken en probleemoplossing.', cat:'Focus' },
+  { k:'Gamma', a:30, b:50, c:'#f43f5e', d:'Helderheid, alertheid en informatie verwerken.', cat:'Energie' },
+];
+const bandOf = hz => BANDS.find(b => hz < b.b) || BANDS[4];
+const studio = { mode:'binaural', beat:10, carrier:200, tone:528, dur:20, person:'' };
+const LOG = { beat:[.5, 50], tone:[20, 2000] };
+const toPos = (v, [a, b]) => Math.round(Math.log(v / a) / Math.log(b / a) * 1000);
+const fromPos = (p, [a, b]) => +(a * (b / a) ** (p / 1000)).toFixed(p > 500 && b > 100 ? 0 : 2);
+function studioStep(){ return studio.mode === 'tone'
+  ? { hz: studio.tone, sec: studio.dur * 60, mode:'tone', label:'Pure toon', carrier:null }
+  : { hz: studio.beat, sec: studio.dur * 60, mode: studio.mode === 'iso' ? 'isochronic' : 'binaural', carrier: studio.carrier, label: bandOf(studio.beat).k }; }
+let studioProg = null;
+function studioProgram(){
+  const s = studioStep(), b = studio.mode === 'tone' ? null : bandOf(s.hz);
+  if (!studioProg) studioProg = { id:'studio', steps:[s] };
+  Object.assign(studioProg, { name: 'Studio · ' + fmtHz(s.hz) + ' Hz', cat: b ? b.cat : 'Solfeggio', desc: 'Live gemaakt in de Studio.' });
+  studioProg.steps[0] = s; return studioProg;
+}
+function renderStudio(){
+  const tone = studio.mode === 'tone';
+  $('#studio').innerHTML = `
+    <div class="page-head"><h1>Studio</h1><p>Maak live je eigen frequentie. Schuif tijdens het afspelen en hoor het direct veranderen.</p></div>
+    <div class="studio">
+      <div class="studio-main" id="stuMain">
+        <div class="seg" id="stuMode">
+          <button data-m="binaural" class="${studio.mode === 'binaural' ? 'on' : ''}">🎧 Binauraal</button>
+          <button data-m="iso" class="${studio.mode === 'iso' ? 'on' : ''}">〰️ Isochroon</button>
+          <button data-m="tone" class="${tone ? 'on' : ''}">✨ Pure toon</button>
+        </div>
+        <div class="readout"><div class="big"><span id="stuBig"></span><small>Hz</small></div><span class="band-pill" id="stuBand"></span></div>
+        <p class="muted" id="stuDesc" style="margin:0"></p>
+        ${tone ? '' : `<div class="bandbar" id="bandbar">${BANDS.map(b => `<div style="flex:${Math.log(b.b / b.a)};background:${b.c}" data-b="${b.k}"></div>`).join('')}<span class="bandmarker" id="bandMarker"></span></div>
+          <div class="bandlabels">${BANDS.map(b => `<span style="flex:${Math.log(b.b / b.a)}">${b.k}</span>`).join('')}</div>`}
+        ${tone ? `<div class="ctrl"><div class="row"><label>Frequentie</label><output id="oTone"></output></div><input type="range" id="rTone" min="0" max="1000" value="${toPos(studio.tone, LOG.tone)}"></div>`
+          : `<div class="ctrl"><div class="row"><label>Beat (hersengolf)</label><output id="oBeat"></output></div><input type="range" id="rBeat" min="0" max="1000" value="${toPos(studio.beat, LOG.beat)}"></div>
+             <div class="ctrl"><div class="row"><label>Draaggolf (toonhoogte)</label><output id="oCar"></output></div><input type="range" id="rCar" min="60" max="700" value="${studio.carrier}"></div>`}
+        <div class="chips" style="margin:8px 0 22px">${(tone
+          ? [[174,'174'],[285,'285'],[396,'396'],[417,'417'],[432,'432'],[528,'528'],[639,'639'],[741,'741'],[852,'852'],[963,'963'],[136.1,'Om 136,1']]
+          : [[2,'Delta 2'],[4,'Theta 4'],[6,'Theta 6'],[7.83,'Schumann 7,83'],[10,'Alfa 10'],[14,'Bèta 14'],[18,'Bèta 18'],[40,'Gamma 40']]
+          ).map(([v, n]) => `<button class="chip" data-preset="${v}">${n}</button>`).join('')}</div>
+        <div class="row">
+          <button class="btn primary" id="stuPlay"></button>
+          <select id="stuDur" style="width:auto;border-radius:999px">${[5,10,15,20,30,45,60].map(m => `<option value="${m}" ${studio.dur === m ? 'selected' : ''}>${m} min</option>`).join('')}</select>
+          <select id="stuPerson" style="width:auto;border-radius:999px"><option value="">Voor mezelf</option>${db.people.map(p => `<option value="${esc(p.id)}" ${studio.person === p.id ? 'selected' : ''}>Voor ${esc(p.name)}</option>`).join('')}</select>
+          <button class="btn" id="stuFull" title="Volledig scherm">⛶</button>
+          <button class="btn" id="stuSave">Opslaan als programma</button>
+        </div>
+      </div>
+      <div class="panel">
+        ${tone ? `<h3>Pure tonen</h3><p class="muted small">Eén enkele toon die je direct hoort. Solfeggio-frequenties en planetaire tonen hebben elk hun eigen traditionele betekenis (zie Kennis). Je hebt geen koptelefoon nodig.</p>`
+          : studio.mode === 'binaural' ? `<h3>Zo werkt een binaurale beat</h3><p class="muted small">Elk oor krijgt een iets andere toon. Je hersenen horen het verschil als een zachte "beat". Dit werkt alleen met een koptelefoon.</p>
+          <div class="ears"><div class="ear">Links<b id="eL"></b>Hz</div><div style="font-size:22px">🧠</div><div class="ear">Rechts<b id="eR"></b>Hz</div>
+          <div class="brain">Je hoort een beat van <b id="eB"></b> Hz</div></div>`
+          : `<h3>Isochrone pulsen</h3><p class="muted small">Eén toon die ritmisch aan en uit gaat. Je hebt geen koptelefoon nodig en het effect is duidelijker hoorbaar dan bij binaurale beats.</p>
+          <div class="ears"><div class="ear" style="grid-column:1/-1">Toon<b id="eL"></b>Hz</div><div class="brain">Pulseert <b id="eB"></b>× per seconde</div></div>`}
+        <div class="notice" style="margin-top:16px">Begin zacht en bouw het volume langzaam op. Luister niet tijdens het autorijden. Heb je epilepsie, dan kun je beter eerst met je arts overleggen.</div>
+      </div>
+    </div>`;
+  updateStudioReadout(); updateStudioPlayBtn();
+}
+function updateStudioReadout(){
+  const tone = studio.mode === 'tone', hz = tone ? studio.tone : studio.beat, b = bandOf(studio.beat);
+  const color = tone ? '#c06cf0' : b.c;
+  $('#stuMain').style.setProperty('--bandc', hexA(color, .45));
+  $('#stuBig').textContent = fmtHz(hz);
+  const pill = $('#stuBand'); pill.style.background = color; pill.textContent = tone ? 'Hoorbare toon' : b.k + 'golven';
+  $('#stuDesc').textContent = tone ? (SOLF.find(x => Math.abs(x.hz - hz) < 1)?.d || 'Een pure sinustoon. Zoek je eigen frequentie.') : b.d;
+  if (!tone){
+    $$('#bandbar div').forEach(d => d.classList.toggle('on', d.dataset.b === b.k));
+    $('#bandMarker').style.left = `calc(${clamp(Math.log(studio.beat / .5) / Math.log(100), 0, 1) * 100}% - 2px)`;
+    $('#oBeat').textContent = fmtHz(studio.beat) + ' Hz'; $('#oCar').textContent = fmtHz(studio.carrier) + ' Hz';
+    $('#eL').textContent = fmtHz(studio.mode === 'iso' ? studio.carrier : studio.carrier - studio.beat / 2);
+    if ($('#eR')) $('#eR').textContent = fmtHz(studio.carrier + studio.beat / 2);
+    $('#eB').textContent = fmtHz(studio.beat);
+  } else $('#oTone').textContent = fmtHz(studio.tone) + ' Hz';
+  if (pl.playing && pl.program?.id === 'studio'){ const p = studioProgram(); engine.retune(p.steps[0]); updateStageStatic(); refreshAll(); }
+}
+function updateStudioPlayBtn(){ const b = $('#stuPlay'); if (!b) return; const live = pl.playing && pl.program?.id === 'studio';
+  b.innerHTML = live ? '■ Stoppen' : icon('play', 16) + ' Live afspelen'; }
+$('#studio').addEventListener('input', e => {
+  const id = e.target.id;
+  if (id === 'rBeat') studio.beat = fromPos(+e.target.value, LOG.beat);
+  else if (id === 'rTone') studio.tone = fromPos(+e.target.value, LOG.tone);
+  else if (id === 'rCar') studio.carrier = +e.target.value;
+  else return;
+  updateStudioReadout();
+});
+$('#studio').addEventListener('change', e => {
+  if (e.target.id === 'stuDur'){ studio.dur = +e.target.value; if (pl.program?.id === 'studio') studioProgram(); }
+  if (e.target.id === 'stuPerson') studio.person = e.target.value;
+});
+$('#studio').addEventListener('click', e => {
+  const t = e.target.closest('button'); if (!t) return;
+  if (t.dataset.m){ studio.mode = t.dataset.m; renderStudio(); if (pl.playing && pl.program?.id === 'studio'){ engine.play(studioProgram().steps[0]); refreshAll(); } return; }
+  if (t.dataset.preset){ const v = +t.dataset.preset; if (studio.mode === 'tone'){ studio.tone = v; $('#rTone').value = toPos(v, LOG.tone); } else { studio.beat = v; $('#rBeat').value = toPos(v, LOG.beat); } updateStudioReadout(); }
+  if (t.id === 'stuPlay'){
+    if (pl.playing && pl.program?.id === 'studio') return finish(false);
+    if (pl.playing && !confirm(`"${pl.program.name}" stoppen en de Studio starten?`)) return;
+    if (pl.playing) finish(false);
+    studioProg = null; setProgram(studioProgram()); pl.personId = studio.person; pl.intent = ''; startSession();
+  }
+  if (t.id === 'stuFull'){ if (!(pl.playing && pl.program?.id === 'studio')){ if (pl.playing) return showStage(); studioProg = null; setProgram(studioProgram()); pl.personId = studio.person; } showStage(); }
+  if (t.id === 'stuSave'){ const s = studioStep(); openEditor({ id:null, name: studio.mode === 'tone' ? fmtHz(s.hz) + ' Hz toon' : bandOf(s.hz).k + ' ' + fmtHz(s.hz) + ' Hz', cat: studio.mode === 'tone' ? 'Solfeggio' : bandOf(s.hz).cat, desc:'Gemaakt in de Studio.', steps:[{ ...s }] }); }
+});
+
+/* ============ Mensen ============ */
+const initials = n => n.split(/\s+/).filter(Boolean).slice(0, 2).map(x => x[0].toUpperCase()).join('') || '?';
+function avatarStyle(p){ const keys = Object.keys(CATS); let h = 0; for (const ch of p.id) h = (h * 31 + ch.charCodeAt(0)) >>> 0; const c = CATS[keys[h % (keys.length - 1)]]; return `--g0:${c.g[0]};--g1:${c.g[1]}`; }
+let editingPerson = null;
+function renderPeople(){
+  $('#people').innerHTML = `
+    <div class="page-head"><h1>Mensen</h1><button class="btn primary" id="newPerson">+ Persoon toevoegen</button><p>Werk ook aan frequency healing voor anderen. Leg hun intentie vast en houd per persoon bij welke sessies je hebt gedaan.</p></div>
+    <div class="grid">${db.people.map(p => { const ss = db.sessions.filter(s => s.personId === p.id), mins = Math.round(ss.reduce((a, s) => a + s.playedSec, 0) / 60);
+      return `<div class="person">
+        <div class="row" style="flex-wrap:nowrap"><span class="avatar" style="${avatarStyle(p)}">${esc(initials(p.name))}</span>
+          <div style="min-width:0"><h3>${esc(p.name)}</h3><div class="small muted">${ss.length} sessie${ss.length === 1 ? '' : 's'} · ${mins} min${ss[0] ? ' · laatst ' + new Date(ss[0].date).toLocaleDateString('nl-NL', { day:'numeric', month:'short' }) : ''}</div></div></div>
+        ${p.intent ? `<div class="small">🎯 ${esc(p.intent)}</div>` : ''}
+        ${p.notes ? `<div class="small muted" style="white-space:pre-wrap">${esc(p.notes)}</div>` : ''}
+        <div class="row" style="margin-top:auto"><button class="btn primary sm" data-session="${p.id}">${icon('play', 14)} Sessie</button><button class="btn sm" data-log="${p.id}">Logboek</button><button class="btn sm" data-editp="${p.id}">Bewerken</button></div>
+      </div>`; }).join('') || '<div class="empty" style="grid-column:1/-1">Nog niemand toegevoegd.<br>Voeg de mensen toe voor wie je sessies doet. 💜</div>'}</div>`;
+}
+$('#people').addEventListener('click', e => {
+  const t = e.target.closest('button'); if (!t) return;
+  if (t.id === 'newPerson') return openPerson(null);
+  const p = db.people.find(x => x.id === (t.dataset.session || t.dataset.log || t.dataset.editp));
+  if (t.dataset.session){ if (!pl.playing){ pl.personId = p.id; pl.intent = p.intent || ''; } filterCat = ''; showTab('discover'); scrollTo({ top:0, behavior:'smooth' }); }
+  if (t.dataset.log){ journalFilter = p.id; showTab('journal'); }
+  if (t.dataset.editp) openPerson(p);
+});
+function openPerson(p){ editingPerson = p; $('#peName').value = p?.name || ''; $('#peIntent').value = p?.intent || ''; $('#peNotes').value = p?.notes || '';
+  $('#peDelete').style.visibility = p ? 'visible' : 'hidden'; $('#personDlg').showModal(); }
+$('#peCancel').onclick = () => $('#personDlg').close();
+$('#peDelete').onclick = () => { if (editingPerson && confirm(`${editingPerson.name} verwijderen? De sessies in het logboek blijven bewaard.`)){
+  db.people = db.people.filter(x => x.id !== editingPerson.id); if (pl.personId === editingPerson.id) pl.personId = ''; save(); $('#personDlg').close(); renderPeople(); } };
+$('#personForm').onsubmit = () => { const d = { name: $('#peName').value.trim(), intent: $('#peIntent').value.trim(), notes: $('#peNotes').value.trim() };
+  if (editingPerson){ Object.assign(editingPerson, d); db.sessions.forEach(s => { if (s.personId === editingPerson.id) s.personName = d.name; }); }
+  else db.people.push({ id: uid(), ...d });
+  save(); renderPeople(); };
+
+/* ============ Logboek ============ */
+let journalFilter = '';
+function renderJournal(){
+  const st = stats();
+  const list = db.sessions.filter(s => !journalFilter || (journalFilter === '__self' ? !s.personId : s.personId === journalFilter));
+  let lastDay = '', html = '';
+  list.forEach(s => {
+    const dk = dayKey(s.date);
+    if (dk !== lastDay){ lastDay = dk; const d = new Date(s.date), today = dayKey(new Date()), y = new Date(); y.setDate(y.getDate() - 1);
+      html += `<div class="daygroup">${dk === today ? 'Vandaag' : dk === dayKey(y) ? 'Gisteren' : d.toLocaleDateString('nl-NL', { weekday:'long', day:'numeric', month:'long', year: d.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined })}</div>`; }
+    const c = cat(s.cat || getProgram(s.programId)?.cat);
+    html += `<div class="entry" style="--g0:${c.g[0]};--g1:${c.g[1]}"><span class="dot">${c.icon}</span>
+      <div><h4>${esc(s.programName)}</h4>
+        <div class="meta">${new Date(s.date).toLocaleTimeString('nl-NL', { hour:'2-digit', minute:'2-digit' })} · ${fmtMin(s.playedSec)}${s.completed ? '' : ' (gestopt)'} · ${s.personId ? 'voor ' + esc(s.personName) : 'voor jezelf'}${s.rating ? ` · <span class="stars-static">${'★'.repeat(+s.rating)}</span>` : ''}</div>
+        ${s.intent ? `<div class="note">🎯 ${esc(s.intent)}</div>` : ''}${s.note ? `<div class="note muted">“${esc(s.note)}”</div>` : ''}</div>
+      <div class="row" style="flex-wrap:nowrap;gap:6px"><button class="tiny" data-note="${s.id}" title="Notitie">✎</button><button class="tiny" data-deln="${s.id}" title="Verwijderen">✕</button></div></div>`;
+  });
+  $('#journal').innerHTML = `
+    <div class="page-head"><h1>Logboek</h1>
+      <select id="jFilter" style="width:auto;border-radius:999px"><option value="">Iedereen</option><option value="__self">Mezelf</option>${db.people.map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}</select></div>
+    <div class="kpis">
+      <div class="kpi"><b>${Math.round(st.total / 60)}</b><span>minuten in totaal</span></div>
+      <div class="kpi"><b>${st.count}</b><span>sessies</span></div>
+      <div class="kpi"><b>🔥 ${st.streak}</b><span>dagen op rij</span></div>
+      <div class="kpi"><b>${st.people}</b><span>mensen geholpen</span></div>
+    </div>
+    ${html || '<div class="empty">Nog geen sessies. Je eerste sessie verschijnt hier. ✨</div>'}`;
+  $('#jFilter').value = journalFilter;
+  $('#jFilter').onchange = e => { journalFilter = e.target.value; renderJournal(); };
+}
+$('#journal').addEventListener('click', e => {
+  const t = e.target.closest('button'); if (!t) return; const s = db.sessions.find(x => x.id === (t.dataset.note || t.dataset.deln)); if (!s) return;
+  if (t.dataset.note){ const n = prompt('Notitie bij deze sessie', s.note || ''); if (n !== null){ s.note = n.trim(); save(); renderJournal(); } }
+  if (t.dataset.deln && confirm('Deze sessie verwijderen?')){ db.sessions = db.sessions.filter(x => x !== s); save(); renderJournal(); }
+});
+
+/* ============ Kennis ============ */
+const SOLF = [
+  { hz:174, n:'Fundament', d:'174 Hz: veiligheid, aarding en ontspanning van het lichaam.' },
+  { hz:285, n:'Weefsel', d:'285 Hz: traditioneel gekoppeld aan herstel en regeneratie.' },
+  { hz:396, n:'Loslaten', d:'396 Hz: angst en schuld loslaten. Wortelchakra.' },
+  { hz:417, n:'Verandering', d:'417 Hz: ruimte maken voor verandering. Sacraal chakra.' },
+  { hz:432, n:'Natuurlijk', d:'432 Hz: de "natuurlijke" stemming, warm en rustig.' },
+  { hz:528, n:'Harmonie', d:'528 Hz: de "liefdesfrequentie", voor transformatie en harmonie.' },
+  { hz:639, n:'Verbinding', d:'639 Hz: relaties en verbinding. Hartchakra.' },
+  { hz:741, n:'Expressie', d:'741 Hz: zuivering en zelfexpressie. Keelchakra.' },
+  { hz:852, n:'Intuïtie', d:'852 Hz: intuïtie en innerlijk weten. Derde oog.' },
+  { hz:963, n:'Eenheid', d:'963 Hz: eenheid en verbinding met het grotere geheel. Kruinchakra.' },
+];
+function renderLearn(){
+  $('#learn').innerHTML = `
+    <div class="page-head"><h1>Kennis</h1><p>Achtergrond bij de frequenties en technieken in FreqHeal.</p></div>
+    <div class="learn-grid">
+      <div class="panel"><h3 style="margin-bottom:8px">Hersengolven</h3>
+        ${BANDS.map(b => `<div class="bandrow"><div><b><span class="swatch" style="background:${b.c}"></span>${b.k}</b><span class="small muted">${b.a}–${b.b === 50 ? '50+' : b.b} Hz</span></div><div class="small">${b.d}</div></div>`).join('')}</div>
+      <div class="panel"><h3 style="margin-bottom:8px">Drie manieren van afspelen</h3>
+        <div class="bandrow"><b>🎧 Binauraal</b><div class="small">Twee iets verschillende tonen, één per oor. Je hersenen maken er zelf een beat van. Dit werkt alleen met een koptelefoon.</div></div>
+        <div class="bandrow"><b>〰️ Isochroon</b><div class="small">Eén toon die ritmisch aan en uit pulseert. Werkt ook via speakers.</div></div>
+        <div class="bandrow"><b>✨ Pure toon</b><div class="small">Een hoorbare frequentie, zoals 528 Hz. Zo worden solfeggio- en chakratonen gespeeld.</div></div>
+      </div>
+      <div class="panel" style="grid-column:1/-1"><h3 style="margin-bottom:12px">Solfeggio-frequenties</h3>
+        <div class="solf">${SOLF.map(s => `<div><b>${s.hz} Hz</b><span class="small muted">${s.n}</span></div>`).join('')}</div>
+        <p class="small muted" style="margin:12px 0 0">Deze betekenissen komen uit spirituele en energetische tradities. Ze zijn niet wetenschappelijk vastgesteld.</p></div>
+      <div class="panel"><h3 style="margin-bottom:8px">Tips voor een goede sessie</h3>
+        <div class="small" style="display:grid;gap:8px">
+          <div>🎧 Gebruik een koptelefoon voor binaurale beats.</div>
+          <div>🔉 Laag volume is genoeg: het effect zit niet in de luidheid.</div>
+          <div>🛋️ Zit of lig comfortabel, met je ogen dicht.</div>
+          <div>⏱ 15–30 minuten is ideaal. Voor slapen of meditatie mag het tot 60 minuten.</div>
+          <div>🫁 Combineer de sessie met de ademgids voor een dieper effect.</div>
+          <div>📓 Noteer na afloop hoe je je voelt. Zo ontdek je wat bij jou werkt.</div>
+        </div></div>
+      <div class="panel"><h3 style="margin-bottom:8px">Sessies voor anderen</h3>
+        <p class="small">Voeg iemand toe bij <b>Mensen</b>, start een sessie met hun naam en intentie, en houd alles bij in het logboek. Je kunt een sessie ook als WAV exporteren en sturen, zodat de ander zelf kan luisteren.</p>
+        <div class="notice">FreqHeal is bedoeld voor ontspanning en welzijn. Het vervangt geen medisch advies of medische behandeling. Luister niet tijdens het autorijden. Heb je epilepsie, dan kun je beter eerst met je arts overleggen.</div></div>
+    </div>`;
+}
+
+/* ============ Editor ============ */
+let editing = null;
+function stepRow(s){
+  return `<tr><td><input type="number" step="any" min="0.1" max="20000" class="sHz" value="${s.hz}" required style="width:88px"></td>
+    <td><input type="number" step="any" min="0.1" class="sMin" value="${+(s.sec / 60).toFixed(2)}" required style="width:70px"></td>
+    <td><select class="sMode" style="width:auto">${['auto','tone','binaural','isochronic'].map(m => `<option value="${m}" ${s.mode === m ? 'selected' : ''}>${m === 'auto' ? 'Auto' : MODE_LABEL[m]}</option>`).join('')}</select></td>
+    <td><input type="number" step="any" min="20" class="sCar" value="${s.carrier ?? ''}" placeholder="${db.settings.carrier}" style="width:84px"></td>
+    <td><input class="sLabel" value="${esc(s.label || '')}" style="min-width:100px"></td>
+    <td style="white-space:nowrap"><button type="button" class="tiny" data-m="up">↑</button> <button type="button" class="tiny" data-m="down">↓</button> <button type="button" class="tiny" data-m="x">✕</button></td></tr>`;
+}
+function openEditor(p){
+  editing = p; $('#progDlgTitle').textContent = p.id ? 'Programma bewerken' : 'Nieuw programma';
+  const cats = Object.keys(CATS); if (p.cat && !CATS[p.cat]) cats.push(p.cat);
+  $('#pCat').innerHTML = cats.map(c => `<option value="${esc(c)}">${CATS[c]?.icon || '•'} ${esc(c)}</option>`).join('');
+  $('#pName').value = p.name; $('#pCat').value = p.cat || 'Eigen'; $('#pDesc').value = p.desc || '';
+  $('#pSteps').innerHTML = p.steps.map(stepRow).join(''); $('#progDlg').showModal();
+}
+$('#pAddStep').onclick = () => $('#pSteps').insertAdjacentHTML('beforeend', stepRow(S(432,5,'auto')));
+$('#pSteps').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; const tr = b.closest('tr');
+  if (b.dataset.m === 'x' && $('#pSteps').children.length > 1) tr.remove();
+  if (b.dataset.m === 'up' && tr.previousElementSibling) tr.parentNode.insertBefore(tr, tr.previousElementSibling);
+  if (b.dataset.m === 'down' && tr.nextElementSibling) tr.parentNode.insertBefore(tr.nextElementSibling, tr); });
+$('#pCancel').onclick = () => $('#progDlg').close();
+$('#progForm').onsubmit = e => {
+  const steps = [...$('#pSteps').children].map(tr => ({ hz: +tr.querySelector('.sHz').value, sec: Math.round(+tr.querySelector('.sMin').value * 60),
+    mode: tr.querySelector('.sMode').value, carrier: tr.querySelector('.sCar').value ? +tr.querySelector('.sCar').value : null, label: tr.querySelector('.sLabel').value.trim() }))
+    .filter(s => s.hz > 0 && s.sec > 0);
+  if (!steps.length){ e.preventDefault(); alert('Voeg minstens één geldige stap toe.'); return; }
+  const p = { id: editing.id || 'u-' + uid(), name: $('#pName').value.trim(), cat: $('#pCat').value, desc: $('#pDesc').value.trim(), steps };
+  const i = db.programs.findIndex(x => x.id === p.id); if (i >= 0) db.programs[i] = p; else db.programs.push(p);
+  save(); toast('Programma opgeslagen'); if ($('#discover').classList.contains('active')) renderDiscover(); else { filterCat = ''; showTab('discover'); }
+};
+
+/* ============ Instellingen ============ */
+$('#settingsBtn').onclick = () => { $('#setBg').value = db.settings.bgPlay;
+  $('#bgStatus').textContent = bg.available() ? '✓ Beschikbaar. De sessie wordt afgespeeld als audiobestand en speelt door op je vergrendelscherm. De Studio blijft live.'
+    : 'Werkt alleen als je FreqHeal via internet opent (bijv. GitHub Pages), niet als lokaal bestand.' + (location.protocol === 'file:' ? '' : ' Herlaad de pagina één keer.');
+  $('#setWave').value = db.settings.wave; $('#setFade').value = db.settings.fade; $('#setCarrier').value = db.settings.carrier; $('#setDlg').showModal(); };
+$('#setClose').onclick = () => $('#setDlg').close();
+$('#setBg').onchange = e => { db.settings.bgPlay = e.target.value; save(); };
+$('#setWave').onchange = e => { db.settings.wave = e.target.value; save(); };
+$('#setFade').onchange = e => { db.settings.fade = clamp(+e.target.value || 0, 0, 10); save(); };
+$('#setCarrier').onchange = e => { db.settings.carrier = clamp(+e.target.value || 200, 40, 1000); save(); };
+$('#exportBtn').onclick = () => { const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(db, null, 2)], { type:'application/json' }));
+  a.download = 'freqheal-backup-' + dayKey(new Date()) + '.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); };
+$('#importFile').onchange = async e => { const f = e.target.files[0]; if (!f) return;
+  try { const d = JSON.parse(await f.text()); if (!d || !Array.isArray(d.programs) || !Array.isArray(d.sessions)) throw new Error('Onbekend formaat');
+    if (!confirm('Je huidige gegevens vervangen door deze back-up?')) return;
+    localStorage.setItem(KEY, JSON.stringify(d)); load(); render(currentTab); toast('Back-up geïmporteerd'); }
+  catch (err){ alert('Import mislukt: ' + err.message); } e.target.value = ''; };
+
+/* ============ Navigatie ============ */
+let currentTab = 'discover';
+function render(t){ ({ discover: renderDiscover, studio: renderStudio, people: renderPeople, journal: renderJournal, learn: renderLearn })[t](); }
+function showTab(t){ currentTab = t; $$('#nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === t));
+  $$('main section').forEach(s => s.classList.toggle('active', s.id === t)); render(t); }
+$('#nav').addEventListener('click', e => { const b = e.target.closest('button'); if (b) showTab(b.dataset.tab); });
+document.addEventListener('keydown', e => {
+  if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName) || $('dialog[open]')) return;
+  if (e.code === 'Space' && (stageOpen || pl.playing)){ e.preventDefault(); if (e.repeat) return; document.activeElement?.blur?.(); togglePlay(); }
+  if (e.key === 'Escape' && stageOpen){ sheetKind ? closeSheet() : hideStage(); }
+  if (stageOpen && e.key === 'ArrowRight') jump(1);
+  if (stageOpen && e.key === 'ArrowLeft') jump(-1);
+});
+
+render('discover');
+if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(e => console.warn('SW', e));
+</script>
+</body>
+</html>
