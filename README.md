@@ -20,6 +20,12 @@ Op een telefoon wordt een sessie afgespeeld als gewoon audiobestand (WAV). `sw.j
 
 Dit kun je instellen via ⚙ → *Doorspelen met vergrendeld scherm*. De Studio speelt altijd live via Web Audio, dus die stopt wel als je het scherm vergrendelt.
 
+## Een sessie delen
+
+Tik in de speler op **🔗 Delen** of bij een programma op **Delen**. Vul in voor wie de sessie is, je naam, de intentie en eventueel een persoonlijk bericht, en stuur de link via WhatsApp, Berichten of mail. Je kunt ook je geluidslagen, de ademgids en de duur meesturen.
+
+De hele sessie zit in de link, achter het `#`-teken. Dat deel van de link wordt niet naar een server gestuurd, dus er wordt niets opgeslagen of geüpload. De ontvanger ziet een welkomstkaart, start de sessie met één tik en kan hem bewaren bij de eigen programma's.
+
 ## Bestanden
 
 | Bestand | Wat |
