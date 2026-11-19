@@ -3,7 +3,7 @@
  * 2. Achtergrondaudio: levert een sessie als "gewoon" WAV-bestand (/fh-stream/<id>.wav),
  *    dat sample voor sample wordt berekend. iOS speelt zo'n audiobestand door bij een vergrendeld scherm.
  */
-const VERSION = 'fh-app-v2';
+const VERSION = 'fh-app-v3';
 const SESSIONS = 'fh-sessions';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
 

@@ -216,7 +216,9 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 @keyframes stageIn{from{transform:translateY(24px) scale(1.02)}to{transform:none}}
 #stCanvas{position:absolute;inset:0;width:100%;height:100%}
 .st-top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:12px;padding:max(16px,env(safe-area-inset-top)) 18px 0}
-.st-title{flex:1;text-align:center}
+.st-title{flex:1;text-align:center;min-width:0}
+.st-side{display:flex;gap:8px;width:88px;flex:none}
+.st-side.r{justify-content:flex-end}
 .st-cat{font-size:12px;text-transform:uppercase;letter-spacing:.16em;color:rgba(255,255,255,.65);font-weight:600}
 .st-name{font-size:20px;font-weight:600}
 .st-for{font-size:13px;color:rgba(255,255,255,.65)}
@@ -328,9 +330,12 @@ th{font-size:12px;color:var(--muted);font-weight:500;text-transform:uppercase;le
 <div id="stage" class="stage hidden">
   <canvas id="stCanvas"></canvas>
   <div class="st-top">
-    <button class="icon-btn glass" id="stClose" title="Minimaliseren (Esc)">⌄</button>
+    <div class="st-side">
+      <button class="icon-btn glass" id="stHome" title="Home: sessie stoppen en terug naar de hoofdpagina" aria-label="Home"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg></button>
+      <button class="icon-btn glass" id="stClose" title="Minimaliseren: de sessie speelt door onderin beeld (Esc)" aria-label="Minimaliseren"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+    </div>
     <div class="st-title"><div class="st-cat" id="stCat"></div><div class="st-name" id="stName"></div><div class="st-for" id="stFor"></div></div>
-    <button class="icon-btn glass" id="stFav" title="Favoriet">♡</button>
+    <div class="st-side r"><button class="icon-btn glass" id="stFav" title="Favoriet">♡</button></div>
   </div>
   <div class="st-center">
     <div class="st-breath" id="stBreath"></div>
@@ -1015,6 +1020,13 @@ $('#sheetBody').addEventListener('click', e => {
 $$('[data-sheet]').forEach(b => b.onclick = e => { e.stopPropagation(); sheetKind === b.dataset.sheet ? closeSheet() : openSheet(b.dataset.sheet); });
 $('#stCanvas').onclick = closeSheet;
 $('#stClose').onclick = hideStage;
+function goHome(){
+  const wasPlaying = pl.playing;
+  hideStage();
+  if (wasPlaying) finish(false); // sessie stoppen en (vanaf 20 s) bewaren in het logboek
+  showTab('discover'); scrollTo({ top:0 });
+}
+$('#stHome').onclick = goHome;
 $('#stPlay').onclick = togglePlay;
 $('#stPrev').onclick = () => jump(-1);
 $('#stNext').onclick = () => jump(1);
